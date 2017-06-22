@@ -34,7 +34,9 @@ public class InboundSocketHandler extends ChannelInboundHandlerAdapter {
                             convertObjectsToTypes(obj.getArgs() == null ? new Object[0] : obj.getArgs()));
                     Functions.serialize.apply(new CallResponse(method.invoke(o, obj.getArgs()))).ifPresent(bytes -> ctx.channel().writeAndFlush(Functions.byteConverter.apply(bytes)));
                     ctx.channel().close();
+                    return;
                 }
+                ctx.channel().close();
             } catch (Exception e) {
                 ctx.channel().close();
                 LOGGER.info(e.getMessage(), e);
