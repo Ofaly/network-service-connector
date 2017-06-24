@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by theso on 6/19/2017.
  */
-public class ClientChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapter {
+class ClientChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapter {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(ClientChannelInboundHandlerAdapter.class);
 

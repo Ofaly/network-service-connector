@@ -19,7 +19,7 @@ import static org.solwind.Functions.serialize;
 /**
  * Created by theso on 6/18/2017.
  */
-public class MethodInvocationHandler implements InvocationHandler {
+class MethodInvocationHandler implements InvocationHandler {
 
     private String discoveryConfig;
 

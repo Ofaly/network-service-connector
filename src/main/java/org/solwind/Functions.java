@@ -7,7 +7,7 @@ import java.util.function.Function;
 /**
  * Created by theso on 6/19/2017.
  */
-public final class Functions {
+final class Functions {
 
     private Functions() {
         //Private constructor.

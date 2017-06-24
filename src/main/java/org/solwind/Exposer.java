@@ -24,11 +24,11 @@ import java.util.Map;
 /**
  * Created by solwind on 6/14/17.
  */
-public class Exposer implements IExposer, Runnable {
+class Exposer implements IExposer, Runnable {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(Exposer.class);
 
-    private final int port;
+    private final String host;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
     private final DiscoveryConfig discoveryConfig;
@@ -36,10 +36,10 @@ public class Exposer implements IExposer, Runnable {
 
     private Map<Class, Object> serviceTable = Collections.synchronizedMap(new HashMap<Class, Object>());
 
-    public Exposer(int port, DiscoveryConfig discoveryConfig) throws IOException, InterruptedException {
+    public Exposer(String host, DiscoveryConfig discoveryConfig) throws IOException, InterruptedException {
         discoveryConfig.init();
         discoveryConfig.connect();
-        this.port = port;
+        this.host = host;
         this.discoveryConfig = discoveryConfig;
         final Thread thread = new Thread(this);
         thread.start();
@@ -48,7 +48,7 @@ public class Exposer implements IExposer, Runnable {
 
     public <T> void expose(T testServiceClass) throws KeeperException, InterruptedException {
         serviceTable.put(testServiceClass.getClass().getInterfaces()[0], testServiceClass);
-        this.discoveryConfig.push(testServiceClass.getClass().getInterfaces()[0].getCanonicalName(), "localhost:" + port);
+        this.discoveryConfig.push(testServiceClass.getClass().getInterfaces()[0].getCanonicalName(), host);
     }
 
     public void stop() throws InterruptedException {
@@ -74,7 +74,8 @@ public class Exposer implements IExposer, Runnable {
                             p.addLast(new InboundSocketHandler(serviceTable));
                         }
                     });
-            b.bind(port).sync().channel().closeFuture().sync();
+            String host[] = this.host.split(":");
+            b.bind(host.length > 1?new Integer(host[1]):80).sync().channel().closeFuture().sync();
         } catch (Exception e) {
             LOGGER.info(e.getMessage(), e);
         } finally {

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * Created by solwind on 6/14/17.
  */
-public class InboundSocketHandler extends ChannelInboundHandlerAdapter {
+class InboundSocketHandler extends ChannelInboundHandlerAdapter {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(InboundSocketHandler.class);
 

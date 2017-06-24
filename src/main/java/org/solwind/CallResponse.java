@@ -8,7 +8,7 @@ import java.io.*;
 /**
  * Created by theso on 6/19/2017.
  */
-public class CallResponse implements Serializable {
+class CallResponse implements Serializable {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(CallResponse.class);
 

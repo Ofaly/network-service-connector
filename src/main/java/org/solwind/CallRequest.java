@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * Created by theso on 6/19/2017.
  */
-public class CallRequest implements Serializable {
+class CallRequest implements Serializable {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(CallRequest.class);
 
