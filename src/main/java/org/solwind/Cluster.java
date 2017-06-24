@@ -15,6 +15,10 @@ public final class Cluster implements IInjector {
         return new Exposer(host, discoveryConfig);
     }
 
+    public static IExposer exposer(DiscoveryConfig discoveryConfig) throws IOException, InterruptedException {
+        return new Exposer(discoveryConfig);
+    }
+
     public IInjector createInjector() {
         return new Cluster();
     }

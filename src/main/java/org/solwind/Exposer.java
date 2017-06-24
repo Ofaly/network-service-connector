@@ -45,6 +45,15 @@ class Exposer implements IExposer, Runnable {
         thread.start();
     }
 
+    public Exposer(DiscoveryConfig discoveryConfig) throws IOException, InterruptedException {
+        discoveryConfig.init();
+        discoveryConfig.connect();
+        this.host = discoveryConfig.props().getProperty("expose.host");
+        this.discoveryConfig = discoveryConfig;
+        final Thread thread = new Thread(this);
+        thread.start();
+    }
+
 
     public <T> void expose(T testServiceClass) throws KeeperException, InterruptedException {
         serviceTable.put(testServiceClass.getClass().getInterfaces()[0], testServiceClass);

@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
@@ -24,8 +25,21 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
         this.properties = properties;
     }
 
+    public ZookeeperDiscoveryConnector() {
+        InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("application.properties");
+        if (resourceAsStream == null) {
+            throw new IllegalStateException("application.properties not found in class path");
+        }
+        this.properties = new Properties();
+        try {
+            this.properties.load(resourceAsStream);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     public void init() {
-        this.host = properties.getProperty("host");
+        this.host = properties.getProperty("zookeeper.connection.host");
         this.zooKeeperClient = new ZooKeeperClient();
     }
 

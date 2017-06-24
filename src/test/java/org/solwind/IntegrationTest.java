@@ -35,7 +35,7 @@ public class IntegrationTest {
 
         embeddedZookeeperServer();
 
-        properties.setProperty("host", "localhost:" + zkPort);
+        properties.setProperty("zookeeper.connection.host", "localhost:" + zkPort);
         exposer = Cluster.exposer("localhost:8090", new ZookeeperDiscoveryConnector(properties));
         ITestService testServiceClass = new TestService();
         exposer.expose(testServiceClass);
