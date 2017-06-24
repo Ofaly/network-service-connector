@@ -21,10 +21,10 @@ import static org.solwind.Functions.serialize;
  */
 class MethodInvocationHandler implements InvocationHandler {
 
-    private String discoveryConfig;
+    private RegistrationServiceHolder registrationServiceHolder;
 
-    public MethodInvocationHandler(String discoveryConfig) {
-        this.discoveryConfig = discoveryConfig;
+    public MethodInvocationHandler(RegistrationServiceHolder registrationServiceHolder) {
+        this.registrationServiceHolder = registrationServiceHolder;
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -43,7 +43,7 @@ class MethodInvocationHandler implements InvocationHandler {
                     }
                 });
 
-        String[] properties = this.discoveryConfig.split(":");
+        String[] properties = this.registrationServiceHolder.getHost().split(":");
         ChannelFuture sync = bootstrap.connect(properties[0], Integer.valueOf(properties[1])).sync();
 
         serialize.apply(new CallRequest(method.getName(), method.getDeclaringClass().getCanonicalName(), args))

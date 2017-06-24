@@ -11,7 +11,7 @@ import java.util.Properties;
 interface DiscoveryConfig {
     void init();
     void connect() throws IOException, InterruptedException;
-    void push(String path, String data) throws KeeperException, InterruptedException;
-    String retrieve(String path);
+    void push(String path, RegistrationServiceHolder data) throws KeeperException, InterruptedException;
+    RegistrationServiceHolder retrieve(String path);
     Properties props();
 }

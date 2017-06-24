@@ -47,13 +47,13 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
         this.zk = this.zooKeeperClient.connect();
     }
 
-    public void push(String path, String data) throws KeeperException, InterruptedException {
+    public void push(String path, RegistrationServiceHolder data) throws KeeperException, InterruptedException {
         this.zooKeeperClient.create(path, data);
     }
 
-    public String retrieve(String path) {
+    public RegistrationServiceHolder retrieve(String path) {
         try {
-            return new String(ZookeeperDiscoveryConnector.this.zk.getData(path, true, null));
+            return new RegistrationServiceHolder(ZookeeperDiscoveryConnector.this.zk.getData(path, true, null));
         } catch (KeeperException e) {
             LOGGER.info(e.getMessage(), e);
         } catch (InterruptedException e) {
@@ -89,12 +89,13 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
             zoo.close();
         }
 
-        public void create(String path, String data) throws
+        public void create(String path, RegistrationServiceHolder data) throws
                 KeeperException, InterruptedException {
-            if (ZookeeperDiscoveryConnector.this.zk.exists("/" + path, true) == null) {
-                ZookeeperDiscoveryConnector.this.zk.create("/" + path, data.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                        CreateMode.PERSISTENT);
+            if (ZookeeperDiscoveryConnector.this.zk.exists("/" + path, true) != null) {
+                ZookeeperDiscoveryConnector.this.zk.delete("/" + path, 0);
             }
+            ZookeeperDiscoveryConnector.this.zk.create("/" + path, data.toString().getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    CreateMode.PERSISTENT);
         }
     }
 

@@ -55,9 +55,10 @@ class Exposer implements IExposer, Runnable {
     }
 
 
-    public <T> void expose(T testServiceClass) throws KeeperException, InterruptedException {
+    public <T> void expose(T testServiceClass, String version, String shortDescription) throws KeeperException, InterruptedException {
         serviceTable.put(testServiceClass.getClass().getInterfaces()[0], testServiceClass);
-        this.discoveryConfig.push(testServiceClass.getClass().getInterfaces()[0].getCanonicalName(), host);
+        LOGGER.info("\nExpose for {} {} ", testServiceClass, String.format("\nVersion: %s\n Description: %s\n", version, shortDescription));
+        this.discoveryConfig.push(testServiceClass.getClass().getInterfaces()[0].getCanonicalName(), new RegistrationServiceHolder(host, version, shortDescription));
     }
 
     public void stop() throws InterruptedException {
@@ -83,8 +84,8 @@ class Exposer implements IExposer, Runnable {
                             p.addLast(new InboundSocketHandler(serviceTable));
                         }
                     });
-            String host[] = this.host.split(":");
-            b.bind(host.length > 1?new Integer(host[1]):80).sync().channel().closeFuture().sync();
+            String[] hostSplit = this.host.split(":");
+            b.bind(hostSplit.length > 1?new Integer(hostSplit[1]):80).sync().channel().closeFuture().sync();
         } catch (Exception e) {
             LOGGER.info(e.getMessage(), e);
         } finally {

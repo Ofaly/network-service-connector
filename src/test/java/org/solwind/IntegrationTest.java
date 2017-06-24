@@ -38,7 +38,7 @@ public class IntegrationTest {
         properties.setProperty("zookeeper.connection.host", "localhost:" + zkPort);
         exposer = Cluster.exposer("localhost:8090", new ZookeeperDiscoveryConnector(properties));
         ITestService testServiceClass = new TestService();
-        exposer.expose(testServiceClass);
+        exposer.expose(testServiceClass, "1", "Test description");
     }
 
     private void initPort() throws IOException {
