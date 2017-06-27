@@ -13,7 +13,7 @@ zookeeper.connection.host=127.0.0.1:2888
 expose.host=127.0.0.1:8090
 ```
 
-###Service
+### Service
 ```java
 public interface ITestService {
     String text();
@@ -32,13 +32,13 @@ public class TestService implements ITestService {
 }
 ```
 
-###Expose service
+### Expose service
 ```java
 IExposer exposer = Cluster.exposer(new ZookeeperDiscoveryConnector());
 exposer.expose(new TestService(), "Some version", "Some description");
 ```
 
-###Consume service
+### Consume service
 To consume service need to have only <b>zookeeper.connection.host</b> into application properties file.
 
 ```java
