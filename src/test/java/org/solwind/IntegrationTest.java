@@ -16,6 +16,7 @@ import java.util.Properties;
  * Created by solwind on 6/14/17.
  */
 @RunWith(JUnit4.class)
+@Ignore
 public class IntegrationTest {
 
     private IExposer exposer;
