@@ -32,7 +32,6 @@ public class ClientChannelInboundHandlerAdapterTest {
     }
 
     @Test
-    @Ignore
     public void channelRead() throws Exception {
         clientChannelInboundHandlerAdapter.channelRead(channelHandlerContext,
                 Functions.byteConverter.apply(Functions.serialize.apply(new CallResponse("testvalue")).get()));
