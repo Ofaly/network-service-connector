@@ -1,3 +1,4 @@
+https://travis-ci.org/thesolwind/distributed-service-injector.svg?branch=master
 # Distributed service injector.[DRAFT]
 
 This library allows you to easy create communication between different services which run on different hosts. It uses the Apache zookeeper to find location of services, the netty io to connnect beatween services and java serialization to serialize queries beatween services.
