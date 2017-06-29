@@ -1,4 +1,4 @@
-package org.solwind;
+package io.solwind;
 
 import java.io.*;
 import java.util.Optional;
@@ -7,7 +7,7 @@ import java.util.function.Function;
 /**
  * Created by theso on 6/19/2017.
  */
-final class Functions {
+public final class Functions {
 
     private Functions() {
         //Private constructor.

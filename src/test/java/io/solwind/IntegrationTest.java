@@ -1,5 +1,9 @@
-package org.solwind;
+package io.solwind;
 
+import io.solwind.api.IDiscovery;
+import io.solwind.api.IExposer;
+import io.solwind.impl.Cluster;
+import io.solwind.impl.ZookeeperDiscoveryConnector;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.server.ServerConfig;
 import org.apache.zookeeper.server.ZooKeeperServerMain;
@@ -48,7 +52,7 @@ public class IntegrationTest {
         serverSocket.close();
     }
 
-    @Test()
+    @Test
     public void test() throws IOException, InterruptedException {
 
         final IDiscovery discovery = Cluster.discovery(new ZookeeperDiscoveryConnector(properties));

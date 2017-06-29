@@ -1,4 +1,4 @@
-package org.solwind;
+package io.solwind.api;
 
 import java.io.IOException;
 

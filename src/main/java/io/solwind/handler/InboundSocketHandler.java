@@ -1,7 +1,10 @@
-package org.solwind;
+package io.solwind.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.solwind.Functions;
+import io.solwind.protocol.CallRequest;
+import io.solwind.protocol.CallResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +16,7 @@ import java.util.stream.Collectors;
 /**
  * Created by solwind on 6/14/17.
  */
-class InboundSocketHandler extends ChannelInboundHandlerAdapter {
+public class InboundSocketHandler extends ChannelInboundHandlerAdapter {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(InboundSocketHandler.class);
 

@@ -1,4 +1,4 @@
-package org.solwind;
+package io.solwind.handler;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -9,17 +9,19 @@ import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.solwind.protocol.CallRequest;
+import io.solwind.protocol.CallResponse;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-import static org.solwind.Functions.byteConverter;
-import static org.solwind.Functions.serialize;
+import static io.solwind.Functions.byteConverter;
+import static io.solwind.Functions.serialize;
 
 /**
  * Created by theso on 6/18/2017.
  */
-class MethodInvocationHandler implements InvocationHandler {
+public class MethodInvocationHandler implements InvocationHandler {
 
     private RegistrationServiceHolder registrationServiceHolder;
 

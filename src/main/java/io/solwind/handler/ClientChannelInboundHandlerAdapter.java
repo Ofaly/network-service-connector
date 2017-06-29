@@ -1,14 +1,16 @@
-package org.solwind;
+package io.solwind.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.solwind.Functions;
+import io.solwind.protocol.CallResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Created by theso on 6/19/2017.
  */
-class ClientChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapter {
+public class ClientChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapter {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(ClientChannelInboundHandlerAdapter.class);
 

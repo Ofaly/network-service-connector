@@ -1,5 +1,6 @@
-package org.solwind;
+package io.solwind.api;
 
+import io.solwind.handler.RegistrationServiceHolder;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
@@ -8,7 +9,7 @@ import java.util.Properties;
 /**
  * Created by solwind on 6/14/17.
  */
-interface DiscoveryConfig {
+public interface DiscoveryConfig {
     void init();
     void connect() throws IOException, InterruptedException;
     void push(String path, RegistrationServiceHolder data) throws KeeperException, InterruptedException;

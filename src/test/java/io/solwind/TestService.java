@@ -1,4 +1,6 @@
-package org.solwind;
+package io.solwind;
+
+import io.solwind.api.Discoverable;
 
 /**
  * Created by solwind on 6/14/17.

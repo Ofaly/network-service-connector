@@ -1,5 +1,7 @@
-package org.solwind;
+package io.solwind.impl;
 
+import io.solwind.api.DiscoveryConfig;
+import io.solwind.handler.RegistrationServiceHolder;
 import org.apache.zookeeper.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

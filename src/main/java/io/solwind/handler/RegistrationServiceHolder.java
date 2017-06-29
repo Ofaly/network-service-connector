@@ -1,11 +1,11 @@
-package org.solwind;
+package io.solwind.handler;
 
 import java.util.Objects;
 
 /**
  * Created by theso on 6/24/2017.
  */
-class RegistrationServiceHolder {
+public class RegistrationServiceHolder {
     private String host;
     private String version;
     private String shortDescription;

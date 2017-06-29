@@ -1,4 +1,4 @@
-package org.solwind;
+package io.solwind;
 
 /**
  * Created by theso on 6/18/2017.

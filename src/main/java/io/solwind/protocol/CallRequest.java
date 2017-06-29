@@ -1,4 +1,4 @@
-package org.solwind;
+package io.solwind.protocol;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * Created by theso on 6/19/2017.
  */
-class CallRequest implements Serializable {
+public class CallRequest implements Serializable {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(CallRequest.class);
 

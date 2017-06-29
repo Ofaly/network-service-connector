@@ -1,4 +1,4 @@
-package org.solwind;
+package io.solwind;
 
 import java.io.Serializable;
 

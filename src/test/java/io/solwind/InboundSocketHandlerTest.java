@@ -1,8 +1,9 @@
-package org.solwind;
+package io.solwind;
 
-import com.sun.org.apache.xpath.internal.operations.String;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.solwind.handler.InboundSocketHandler;
+import io.solwind.protocol.CallRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,12 +12,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.internal.verification.Times;
-import org.mockito.verification.VerificationMode;
 
-import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by theso on 6/21/2017.
@@ -47,7 +44,7 @@ public class InboundSocketHandlerTest {
         Mockito.when(services.containsKey(TestService.class)).thenReturn(true);
         Mockito.when(services.get(TestService.class)).thenReturn(new TestService());
         inboundSocketHandler.channelRead(channelHandlerContext,
-                Functions.byteConverter.apply(Functions.serialize.apply(new CallRequest("echoText", "org.solwind.TestService", null)).get()));
+                Functions.byteConverter.apply(Functions.serialize.apply(new CallRequest("echoText", "io.solwind.TestService", null)).get()));
         Mockito.verify(channel).writeAndFlush(Mockito.any());
     }
 
@@ -59,7 +56,7 @@ public class InboundSocketHandlerTest {
         Object[] args = new Object[1];
         args[0] = "test";
         inboundSocketHandler.channelRead(channelHandlerContext,
-                Functions.byteConverter.apply(Functions.serialize.apply(new CallRequest("args", "org.solwind.TestService", args)).get()));
+                Functions.byteConverter.apply(Functions.serialize.apply(new CallRequest("args", "io.solwind.TestService", args)).get()));
         Mockito.verify(channel).writeAndFlush(Mockito.any());
     }
 
@@ -67,7 +64,7 @@ public class InboundSocketHandlerTest {
     public void channelReadWithWrongClassName() throws Exception {
         Mockito.when(channelHandlerContext.channel()).thenReturn(channel);
         inboundSocketHandler.channelRead(channelHandlerContext,
-                Functions.byteConverter.apply(Functions.serialize.apply(new CallRequest("echoText", "org.solwind.TestService1", new Object[0])).get()));
+                Functions.byteConverter.apply(Functions.serialize.apply(new CallRequest("echoText", "io.solwind.TestService1", new Object[0])).get()));
         Mockito.verify(channel, new Times(0)).writeAndFlush(Mockito.any());
         Mockito.verify(channel).close();
     }
@@ -77,7 +74,7 @@ public class InboundSocketHandlerTest {
         Mockito.when(channelHandlerContext.channel()).thenReturn(channel);
         Mockito.when(services.containsKey(TestService.class)).thenReturn(false);
         inboundSocketHandler.channelRead(channelHandlerContext,
-                Functions.byteConverter.apply(Functions.serialize.apply(new CallRequest("echoText", "org.solwind.TestService", new Object[0])).get()));
+                Functions.byteConverter.apply(Functions.serialize.apply(new CallRequest("echoText", "io.solwind.TestService", new Object[0])).get()));
         Mockito.verify(channel, new Times(0)).writeAndFlush(Mockito.any());
         Mockito.verify(channel).close();
     }

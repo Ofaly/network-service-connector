@@ -1,4 +1,4 @@
-package org.solwind;
+package io.solwind.protocol;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +8,7 @@ import java.io.*;
 /**
  * Created by theso on 6/19/2017.
  */
-class CallResponse implements Serializable {
+public class CallResponse implements Serializable {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(CallResponse.class);
 

@@ -1,4 +1,4 @@
-package org.solwind;
+package io.solwind.api;
 
 import org.apache.zookeeper.KeeperException;
 

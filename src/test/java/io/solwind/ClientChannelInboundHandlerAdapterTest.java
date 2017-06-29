@@ -1,17 +1,15 @@
-package org.solwind;
+package io.solwind;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.junit.Assert;
+import io.solwind.handler.ClientChannelInboundHandlerAdapter;
+import io.solwind.protocol.CallResponse;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import java.io.ObjectOutputStream;
 
 import static org.junit.Assert.*;
 
@@ -35,7 +33,7 @@ public class ClientChannelInboundHandlerAdapterTest {
     public void channelRead() throws Exception {
         clientChannelInboundHandlerAdapter.channelRead(channelHandlerContext,
                 Functions.byteConverter.apply(Functions.serialize.apply(new CallResponse("testvalue")).get()));
-        Assert.assertEquals("testvalue", clientChannelInboundHandlerAdapter.getResponse().getResponse());
+        assertEquals("testvalue", clientChannelInboundHandlerAdapter.getResponse().getResponse());
     }
 
     @Test
