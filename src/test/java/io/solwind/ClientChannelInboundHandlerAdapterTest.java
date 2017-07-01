@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.util.NoSuchElementException;
+
 import static org.junit.Assert.*;
 
 /**
@@ -36,6 +38,19 @@ public class ClientChannelInboundHandlerAdapterTest {
         assertEquals("testvalue", clientChannelInboundHandlerAdapter.getResponse().getResponse());
     }
 
+    @Test(expected = NoSuchElementException.class)
+    public void channelReadWithNoSerializableDto() throws Exception {
+        clientChannelInboundHandlerAdapter.channelRead(channelHandlerContext,
+                Functions.byteConverter.apply(Functions.serialize.apply(new CallResponse(new NoSerializableCustomDto())).get()));
+        assertEquals("testvalue", clientChannelInboundHandlerAdapter.getResponse().getResponse());
+    }
+
+    @Test
+    public void channelReadWithNoSerializableData() throws Exception {
+        clientChannelInboundHandlerAdapter.channelRead(channelHandlerContext, new byte[]{1,2,3,4});
+        assertNull(clientChannelInboundHandlerAdapter.getResponse());
+    }
+
     @Test
     public void channelReadComplete() throws Exception {
         clientChannelInboundHandlerAdapter.channelReadComplete(channelHandlerContext);
@@ -46,6 +61,15 @@ public class ClientChannelInboundHandlerAdapterTest {
     public void exceptionCaught() throws Exception {
         clientChannelInboundHandlerAdapter.exceptionCaught(channelHandlerContext, new Exception("Test exception"));
         Mockito.verify(channelHandlerContext).close();
+    }
+
+    @Test
+    public void resetResponse() throws Exception {
+        clientChannelInboundHandlerAdapter.channelRead(channelHandlerContext,
+                Functions.byteConverter.apply(Functions.serialize.apply(new CallResponse("testvalue")).get()));
+        assertEquals("testvalue", clientChannelInboundHandlerAdapter.getResponse().getResponse());
+        clientChannelInboundHandlerAdapter.resetResponse();
+        assertNull(clientChannelInboundHandlerAdapter.getResponse());
     }
 
 }

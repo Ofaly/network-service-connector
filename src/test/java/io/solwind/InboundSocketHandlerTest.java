@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.internal.verification.Times;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * Created by theso on 6/21/2017.
@@ -55,6 +56,18 @@ public class InboundSocketHandlerTest {
         Mockito.when(services.get(TestService.class)).thenReturn(new TestService());
         Object[] args = new Object[1];
         args[0] = "test";
+        inboundSocketHandler.channelRead(channelHandlerContext,
+                Functions.byteConverter.apply(Functions.serialize.apply(new CallRequest("args", "io.solwind.TestService", args)).get()));
+        Mockito.verify(channel).writeAndFlush(Mockito.any());
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void channelReadWithNoSerializableArguments() throws Exception {
+        Mockito.when(channelHandlerContext.channel()).thenReturn(channel);
+        Mockito.when(services.containsKey(TestService.class)).thenReturn(true);
+        Mockito.when(services.get(TestService.class)).thenReturn(new TestService());
+        Object[] args = new Object[1];
+        args[0] = new NoSerializableCustomDto();
         inboundSocketHandler.channelRead(channelHandlerContext,
                 Functions.byteConverter.apply(Functions.serialize.apply(new CallRequest("args", "io.solwind.TestService", args)).get()));
         Mockito.verify(channel).writeAndFlush(Mockito.any());

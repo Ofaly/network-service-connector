@@ -36,4 +36,8 @@ public class ClientChannelInboundHandlerAdapter extends ChannelInboundHandlerAda
         return response;
     }
 
+    public void resetResponse() {
+        this.response = null;
+    }
+
 }
