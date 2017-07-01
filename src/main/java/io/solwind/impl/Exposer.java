@@ -1,21 +1,8 @@
 package io.solwind.impl;
 
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.bytes.ByteArrayDecoder;
-import io.netty.handler.codec.bytes.ByteArrayEncoder;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import io.solwind.api.DiscoveryConfig;
 import io.solwind.api.IExposer;
 import io.solwind.api.RmiConnectorServer;
-import io.solwind.handler.InboundSocketHandler;
 import io.solwind.handler.RegistrationServiceHolder;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
@@ -67,7 +54,7 @@ class Exposer implements IExposer {
 
     public <T> void expose(T testServiceClass, String version, String shortDescription) throws KeeperException, InterruptedException {
         serviceTable.put(testServiceClass.getClass().getInterfaces()[0], testServiceClass);
-        LOGGER.info("\nExpose for {} {} ", testServiceClass, String.format("\nVersion: %s\n Description: %s\n", version, shortDescription));
+        LOGGER.info("\nExpose for {}", testServiceClass);
         this.discoveryConfig.push(testServiceClass.getClass().getInterfaces()[0].getCanonicalName(), new RegistrationServiceHolder(host, version, shortDescription));
     }
 

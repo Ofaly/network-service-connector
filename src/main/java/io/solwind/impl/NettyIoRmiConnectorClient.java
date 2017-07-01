@@ -20,8 +20,6 @@ import io.solwind.handler.ClientChannelInboundHandlerAdapter;
  */
 public class NettyIoRmiConnectorClient implements RmiConnectorClient {
 
-    private Bootstrap bootstrap;
-
     private ChannelFuture channelFuture;
 
     private String host;
@@ -51,7 +49,7 @@ public class NettyIoRmiConnectorClient implements RmiConnectorClient {
 
     private void connect() throws InterruptedException {
         clientChannelInboundHandlerAdapter = new ClientChannelInboundHandlerAdapter();
-        this.bootstrap = new Bootstrap().group(new NioEventLoopGroup()).channel(NioSocketChannel.class)
+        Bootstrap bootstrap = new Bootstrap().group(new NioEventLoopGroup()).channel(NioSocketChannel.class)
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .handler(new ChannelInitializer<SocketChannel>() {

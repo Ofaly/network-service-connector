@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
 
 /**
  * Created by solwind on 6/14/17.
@@ -40,10 +39,8 @@ public final class Cluster implements IInjector {
                 discoveryConfig.connect();
                 String concat = "/".concat(service.getCanonicalName());
                 RegistrationServiceHolder znode = discoveryConfig.retrieve(concat);
-                LOGGER.info("\nPrepare to create proxy for {}, {}",service,
-                        String.format("\nHost: %s \nVersion: %s \nDescription: %s", znode.getHost(),
-                                znode.getVersion(), znode.getShortDescription()));
-                MethodInvocationHandler h = new MethodInvocationHandler(znode);
+                LOGGER.info("\nPrepare to create proxy for {}, {}",service, znode);
+                MethodInvocationHandler h = new MethodInvocationHandler();
                 String host = znode.getHost().split(":")[0];
                 Integer port = Integer.valueOf(znode.getHost().split(":")[1]);
                 rmiConnectorClient.setHost(host);

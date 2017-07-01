@@ -79,6 +79,15 @@
                     </formats>
                     <instrumentation>
                         <ignoreTrivial>true</ignoreTrivial>
+                        <excludes>
+                            <exclude>io/solwind/impl/NettyIoRmiConnectorClient.class</exclude>
+                            <exclude>io/solwind/impl/NettyIoRmiConnectorServer.class</exclude>
+                            <exclude>io/solwind/impl/ZookeeperDiscoveryConnector.class</exclude>
+                            <exclude>io/solwind/impl/ZookeeperDiscoveryConnector$ZooKeeperClient.class</exclude>
+                            <exclude>io/solwind/impl/ZookeeperDiscoveryConnector$1.class</exclude>
+                            <exclude>io/solwind/impl/NettyIoRmiConnectorServer$1.class</exclude>
+                            <exclude>io/solwind/impl/NettyIoRmiConnectorClient$1.class</exclude>
+                        </excludes>
                     </instrumentation>
                 </configuration>
                 <executions>
@@ -90,7 +99,94 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <instrumentation>
+                        <excludes>
+                            <exclude>io/solwind/impl/NettyIoRmiConnectorClient.class</exclude>
+                            <exclude>io/solwind/impl/NettyIoRmiConnectorServer.class</exclude>
+                            <exclude>io/solwind/impl/ZookeeperDiscoveryConnector.class</exclude>
+                            <exclude>io/solwind/impl/ZookeeperDiscoveryConnector$ZooKeeperClient.class</exclude>
+                            <exclude>io/solwind/impl/ZookeeperDiscoveryConnector$1.class</exclude>
+                            <exclude>io/solwind/impl/NettyIoRmiConnectorServer$1.class</exclude>
+                            <exclude>io/solwind/impl/NettyIoRmiConnectorClient$1.class</exclude>
+                        </excludes>
+                    </instrumentation>
+                    <formats>
+                        <format>html</format>
+                        <format>xml</format>
+                    </formats>
+                    <check/>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>

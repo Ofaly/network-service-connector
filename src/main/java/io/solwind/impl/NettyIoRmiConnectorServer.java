@@ -17,16 +17,12 @@ import io.solwind.handler.InboundSocketHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by theso on 7/1/2017.
  */
 public class NettyIoRmiConnectorServer implements RmiConnectorServer {
-
-    private ServerBootstrap b;
 
     public static final Logger LOGGER = LoggerFactory.getLogger(NettyIoRmiConnectorServer.class);
 
@@ -55,7 +51,7 @@ public class NettyIoRmiConnectorServer implements RmiConnectorServer {
     public void run() {
         bossGroup = new NioEventLoopGroup(1);
         workerGroup = new NioEventLoopGroup();
-        b = new ServerBootstrap();
+        ServerBootstrap b = new ServerBootstrap();
         try {
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
@@ -73,6 +69,7 @@ public class NettyIoRmiConnectorServer implements RmiConnectorServer {
             b.bind(port).sync().channel().closeFuture().sync();
         } catch (InterruptedException e) {
             LOGGER.info(e.getMessage(), e);
+            Thread.currentThread().interrupt();
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();

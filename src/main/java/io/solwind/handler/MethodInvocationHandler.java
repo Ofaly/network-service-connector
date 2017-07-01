@@ -15,13 +15,7 @@ import static io.solwind.Functions.serialize;
  */
 public class MethodInvocationHandler implements InvocationHandler {
 
-    private RegistrationServiceHolder registrationServiceHolder;
-
     private RmiConnectorClient rmiConnectorClient;
-
-    public MethodInvocationHandler(RegistrationServiceHolder registrationServiceHolder) {
-        this.registrationServiceHolder = registrationServiceHolder;
-    }
 
     public void setRmiConnectorClient(RmiConnectorClient rmiConnectorClient) {
         this.rmiConnectorClient = rmiConnectorClient;

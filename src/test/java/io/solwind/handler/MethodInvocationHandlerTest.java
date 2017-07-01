@@ -28,7 +28,7 @@ public class MethodInvocationHandlerTest {
 
         MockitoAnnotations.initMocks(this);
 
-        methodInvocationHandler = new MethodInvocationHandler(new RegistrationServiceHolder("localhost:8080", "0", ""));
+        methodInvocationHandler = new MethodInvocationHandler();
         methodInvocationHandler.setRmiConnectorClient(rmiConnectorClient);
     }
 
