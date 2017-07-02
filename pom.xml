@@ -11,6 +11,12 @@
 
     <name>distributed-service-injector</name>
 
+    <scm>
+        <connection>scm:git:https://github.com/thesolwind/distributed-service-injector</connection>
+        <developerConnection>scm:git:https://github.com/thesolwind/distributed-service-injector</developerConnection>
+        <url>https://github.com/thesolwind/distributed-service-injector</url>
+    </scm>
+
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -54,6 +60,17 @@
             <id>deploy</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>2.5.3</version>
+                        <configuration>
+                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                            <useReleaseProfile>false</useReleaseProfile>
+                            <releaseProfiles>release</releaseProfiles>
+                            <goals>deploy</goals>
+                        </configuration>
+                    </plugin>
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
