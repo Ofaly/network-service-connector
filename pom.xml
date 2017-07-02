@@ -20,7 +20,7 @@
         It uses the Apache zookeeper to find location of services, the netty io to connnect
         beatween services and java serialization to serialize queries beatween services.
     </description>
-    <url>http://io.solwind</url>
+    <url>http://solwind.io</url>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
