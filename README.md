@@ -4,6 +4,15 @@
 
 This library allows you to easy create communication between different services which run on different hosts. It uses the Apache zookeeper to find location of services, the netty io to connnect beatween services and java serialization to serialize queries beatween services.
 
+#### Maven central
+```xml
+<dependency>
+    <groupId>io.solwind</groupId>
+    <artifactId>distributed-service-injector</artifactId>
+    <version>0.0.2</version>
+</dependency>
+```
+
 The application.properties file needs to be created in classpath. It should contain address to the zookeeper server and port which will be used to call  services.
 
 zookeeper.connection.host - connection string to zookeeper server.<br/>
