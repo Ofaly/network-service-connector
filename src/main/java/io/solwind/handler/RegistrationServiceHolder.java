@@ -1,5 +1,7 @@
 package io.solwind.handler;
 
+import io.solwind.exception.ClassNotFoundRuntimeException;
+
 import java.util.Objects;
 
 /**
@@ -9,19 +11,26 @@ public class RegistrationServiceHolder {
     private String host;
     private String version;
     private String shortDescription;
+    private Class interfaceClass;
 
-    public RegistrationServiceHolder(String host, String version, String shortDescription) {
+    public RegistrationServiceHolder(String host, String version, String shortDescription, Class interfaceClass) {
         this.host = host;
         this.version = version;
         this.shortDescription = shortDescription;
+        this.interfaceClass = interfaceClass;
     }
 
     public RegistrationServiceHolder(byte[] data) {
         Objects.nonNull(data);
         String[] splittedString = new String(data).split(",");
         this.host = splittedString[0];
-        this.version = splittedString.length > 1?splittedString[1]:null;
-        this.shortDescription = splittedString.length >= 3?splittedString[2]:null;
+        try {
+            this.interfaceClass = Class.forName(splittedString[1].trim());
+        } catch (ClassNotFoundException e) {
+            throw new ClassNotFoundRuntimeException(e);
+        }
+        this.version = splittedString.length > 2?splittedString[2]:null;
+        this.shortDescription = splittedString.length >= 4?splittedString[3]:null;
     }
 
     public String getHost() {
@@ -36,8 +45,12 @@ public class RegistrationServiceHolder {
         return shortDescription;
     }
 
+    public Class getInterfaceClass() {
+        return interfaceClass;
+    }
+
     @Override
     public String toString() {
-        return String.format("%s, %s, %s", host, version, shortDescription);
+        return String.format("%s, %s, %s, %s", host, interfaceClass.getCanonicalName(), version, shortDescription);
     }
 }

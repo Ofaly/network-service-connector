@@ -34,7 +34,7 @@ public class ExposerTest {
 
     @Test
     public void exposeWithPassedHostArgument() throws Exception {
-        IExposer iExposer = new Exposer("host:8080", discoveryConfig, rmiConnectorServer);
+        IExposer iExposer = new Exposer("testexposername", "host:8080", discoveryConfig, rmiConnectorServer);
         iExposer.expose(new TestService(), "0", "description");
         Mockito.verify(discoveryConfig).init();
         Mockito.verify(discoveryConfig).connect();
@@ -45,18 +45,19 @@ public class ExposerTest {
     public void expose() throws Exception {
         Properties properties = new Properties();
         properties.setProperty("expose.host", "host:8080");
+        properties.setProperty("exposer.name", "testExposerName");
         Mockito.when(discoveryConfig.props()).thenReturn(properties);
         IExposer iExposer = new Exposer(discoveryConfig, rmiConnectorServer);
         iExposer.expose(new TestService(), "0", "description");
         Mockito.verify(discoveryConfig).init();
         Mockito.verify(discoveryConfig).connect();
-        Mockito.verify(discoveryConfig).props();
+        Mockito.verify(discoveryConfig, Mockito.times(2)).props();
         Mockito.verify(discoveryConfig).push(Matchers.any(), Matchers.any());
     }
 
     @Test
     public void exposeWithPassedHostArgumentWithDefaultPort() throws Exception {
-        IExposer iExposer = new Exposer("host", discoveryConfig, rmiConnectorServer);
+        IExposer iExposer = new Exposer("testexposername","host", discoveryConfig, rmiConnectorServer);
         iExposer.expose(new TestService(), "0", "description");
         Mockito.verify(discoveryConfig).init();
         Mockito.verify(discoveryConfig).connect();
@@ -67,18 +68,19 @@ public class ExposerTest {
     public void exposeWithDefaultPort() throws Exception {
         Properties properties = new Properties();
         properties.setProperty("expose.host", "host");
+        properties.setProperty("exposer.name", "testExposerName");
         Mockito.when(discoveryConfig.props()).thenReturn(properties);
         IExposer iExposer = new Exposer(discoveryConfig, rmiConnectorServer);
         iExposer.expose(new TestService(), "0", "description");
         Mockito.verify(discoveryConfig).init();
         Mockito.verify(discoveryConfig).connect();
-        Mockito.verify(discoveryConfig).props();
+        Mockito.verify(discoveryConfig, Mockito.times(2)).props();
         Mockito.verify(discoveryConfig).push(Matchers.any(), Matchers.any());
     }
 
     @Test
     public void stop() throws Exception {
-        IExposer iExposer = new Exposer("host:8080", discoveryConfig, rmiConnectorServer);
+        IExposer iExposer = new Exposer("testexposername", "host:8080", discoveryConfig, rmiConnectorServer);
         iExposer.expose(new TestService(), "0", "description");
         iExposer.stop();
     }

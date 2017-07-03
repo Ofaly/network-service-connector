@@ -12,7 +12,7 @@ import java.util.Properties;
 public interface DiscoveryConfig {
     void init();
     void connect() throws IOException, InterruptedException;
-    void push(String path, RegistrationServiceHolder data) throws KeeperException, InterruptedException;
+    void push(String exposerName, RegistrationServiceHolder data) throws KeeperException, InterruptedException;
     RegistrationServiceHolder retrieve(String path);
     Properties props();
 }

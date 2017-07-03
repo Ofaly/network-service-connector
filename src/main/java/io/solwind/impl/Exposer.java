@@ -23,11 +23,13 @@ class Exposer implements IExposer {
     private final String host;
     private final DiscoveryConfig discoveryConfig;
     private final RmiConnectorServer rmiConnectorServer;
+    private final String exposerName;
 
 
     private Map<Class, Object> serviceTable = Collections.synchronizedMap(new HashMap<Class, Object>());
 
-    public Exposer(String host, DiscoveryConfig discoveryConfig, RmiConnectorServer rmiConnectorServer) throws IOException, InterruptedException {
+    public Exposer(String exposerName, String host, DiscoveryConfig discoveryConfig, RmiConnectorServer rmiConnectorServer) throws IOException, InterruptedException {
+        this.exposerName = exposerName;
         this.rmiConnectorServer = rmiConnectorServer;
         discoveryConfig.init();
         discoveryConfig.connect();
@@ -44,6 +46,7 @@ class Exposer implements IExposer {
         discoveryConfig.init();
         discoveryConfig.connect();
         this.host = discoveryConfig.props().getProperty("expose.host");
+        this.exposerName = discoveryConfig.props().getProperty("exposer.name");
         this.discoveryConfig = discoveryConfig;
         String[] hostSplit = this.host.split(":");
         rmiConnectorServer.port(hostSplit.length > 1?new Integer(hostSplit[1]):80);
@@ -55,7 +58,8 @@ class Exposer implements IExposer {
     public <T> void expose(T testServiceClass, String version, String shortDescription) throws KeeperException, InterruptedException {
         serviceTable.put(testServiceClass.getClass().getInterfaces()[0], testServiceClass);
         LOGGER.info("\nExpose for {}", testServiceClass);
-        this.discoveryConfig.push(testServiceClass.getClass().getInterfaces()[0].getCanonicalName(), new RegistrationServiceHolder(host, version, shortDescription));
+        this.discoveryConfig.push(exposerName,
+                new RegistrationServiceHolder(host, version, shortDescription, testServiceClass.getClass().getInterfaces()[0]));
     }
 
     public void stop() throws InterruptedException {

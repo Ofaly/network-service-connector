@@ -1,5 +1,6 @@
 package io.solwind.handler;
 
+import io.solwind.ITestService;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -11,20 +12,27 @@ public class RegistrationServiceHolderTest {
 
     @Test
     public void toStringTestFullString() throws Exception {
-        RegistrationServiceHolder registrationServiceHolder = new RegistrationServiceHolder("host:port,version,description".getBytes());
-        assertEquals("host:port, version, description", registrationServiceHolder.toString());
+        RegistrationServiceHolder registrationServiceHolder = new RegistrationServiceHolder("host:port, io.solwind.ITestService,version,description".getBytes());
+        assertEquals("host:port, io.solwind.ITestService, version, description", registrationServiceHolder.toString());
         assertEquals("host:port", registrationServiceHolder.getHost());
         assertEquals("version", registrationServiceHolder.getVersion());
         assertEquals("description", registrationServiceHolder.getShortDescription());
+        assertEquals(ITestService.class, registrationServiceHolder.getInterfaceClass());
     }
 
     @Test
     public void toStringTestHostOnly() throws Exception {
-        RegistrationServiceHolder registrationServiceHolder = new RegistrationServiceHolder("host:port".getBytes());
-        assertEquals("host:port, null, null", registrationServiceHolder.toString());
+        RegistrationServiceHolder registrationServiceHolder = new RegistrationServiceHolder("host:port, io.solwind.ITestService".getBytes());
+        assertEquals("host:port, io.solwind.ITestService, null, null", registrationServiceHolder.toString());
         assertEquals("host:port", registrationServiceHolder.getHost());
+        assertEquals(ITestService.class, registrationServiceHolder.getInterfaceClass());
         assertNull(registrationServiceHolder.getVersion());
         assertNull(registrationServiceHolder.getShortDescription());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void createWithNotexistClass() throws Exception {
+        new RegistrationServiceHolder("host:port, io.solwind.ITestService1".getBytes());
     }
 
 }

@@ -36,11 +36,11 @@ public class ClusterTest {
 
     @Test
     public void discovery() throws Exception {
-        Mockito.when(discoveryConfig.retrieve("/".concat(ITestService.class.getCanonicalName())))
-                .thenReturn(new RegistrationServiceHolder("host:8080", "0", "some desc"));
+        Mockito.when(discoveryConfig.retrieve("/".concat("testExposerName")))
+                .thenReturn(new RegistrationServiceHolder("host:8080", "0", "some desc", ITestService.class));
         Cluster.connectorServer = rmiConnectorServer;
         Cluster.rmiConnectorClient = rmiConnectorClient;
-        ITestService lookup = Cluster.discovery(discoveryConfig).lookup(ITestService.class);
+        ITestService lookup = Cluster.discovery(discoveryConfig).lookup(ITestService.class, "testExposerName");
         Mockito.verify(discoveryConfig).init();
         Mockito.verify(discoveryConfig).connect();
         Mockito.verify(rmiConnectorClient).setPort(8080);
@@ -61,7 +61,7 @@ public class ClusterTest {
         Properties properties = new Properties();
         properties.setProperty("expose.host", "host");
         Mockito.when(discoveryConfig.props()).thenReturn(properties);
-        Cluster.exposer("host:8080", discoveryConfig);
+        Cluster.exposer("testExposer", "host:8080", discoveryConfig);
     }
 
 }

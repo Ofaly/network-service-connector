@@ -41,7 +41,7 @@ public class IntegrationTest {
         embeddedZookeeperServer();
 
         properties.setProperty("zookeeper.connection.host", "localhost:" + zkPort);
-        exposer = Cluster.exposer("localhost:8090", new ZookeeperDiscoveryConnector(properties));
+        exposer = Cluster.exposer("testExposerName", "localhost:8090", new ZookeeperDiscoveryConnector(properties));
         ITestService testServiceClass = new TestService();
         exposer.expose(testServiceClass, "1", "Test description");
     }
@@ -56,7 +56,7 @@ public class IntegrationTest {
     public void test() throws IOException, InterruptedException {
 
         final IDiscovery discovery = Cluster.discovery(new ZookeeperDiscoveryConnector(properties));
-        testService = discovery.lookup(ITestService.class);
+        testService = discovery.lookup(ITestService.class, "testExposerName");
 
         String responseText = testService.echoText();
         Assert.assertEquals("ok", responseText);

@@ -23,8 +23,8 @@ public final class Cluster implements IInjector {
     private Cluster() {
     }
 
-    public static IExposer exposer(String host, DiscoveryConfig discoveryConfig) throws IOException, InterruptedException {
-        return new Exposer(host, discoveryConfig, connectorServer);
+    public static IExposer exposer(String exposerName, String host, DiscoveryConfig discoveryConfig) throws IOException, InterruptedException {
+        return new Exposer(exposerName, host, discoveryConfig, connectorServer);
     }
 
     public static IExposer exposer(DiscoveryConfig discoveryConfig) throws IOException, InterruptedException {
@@ -34,10 +34,10 @@ public final class Cluster implements IInjector {
     public static IDiscovery discovery(final DiscoveryConfig discoveryConfig) {
 
         return new IDiscovery() {
-            public <T> T lookup(Class<T> service) throws IOException, InterruptedException {
+            public <T> T lookup(Class<T> service, String exposerName) throws IOException, InterruptedException {
                 discoveryConfig.init();
                 discoveryConfig.connect();
-                String concat = "/".concat(service.getCanonicalName());
+                String concat = "/".concat(exposerName);
                 RegistrationServiceHolder znode = discoveryConfig.retrieve(concat);
                 LOGGER.info("\nPrepare to create proxy for {}, {}",service, znode);
                 MethodInvocationHandler h = new MethodInvocationHandler();

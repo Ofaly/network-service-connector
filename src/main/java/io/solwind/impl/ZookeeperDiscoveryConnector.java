@@ -49,8 +49,8 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
         this.zk = this.zooKeeperClient.connect();
     }
 
-    public void push(String path, RegistrationServiceHolder data) throws KeeperException, InterruptedException {
-        this.zooKeeperClient.create(path, data);
+    public void push(String exposerName, RegistrationServiceHolder data) throws KeeperException, InterruptedException {
+        this.zooKeeperClient.create(exposerName, data);
     }
 
     public RegistrationServiceHolder retrieve(String path) {
@@ -91,12 +91,13 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
             zoo.close();
         }
 
-        public void create(String path, RegistrationServiceHolder data) throws
+        public void create(String exposerName, RegistrationServiceHolder data) throws
                 KeeperException, InterruptedException {
-            if (ZookeeperDiscoveryConnector.this.zk.exists("/" + path, true) != null) {
-                ZookeeperDiscoveryConnector.this.zk.delete("/" + path, 0);
+
+            if (ZookeeperDiscoveryConnector.this.zk.exists("/" + exposerName, true) != null) {
+                ZookeeperDiscoveryConnector.this.zk.delete("/" + exposerName, 0);
             }
-            ZookeeperDiscoveryConnector.this.zk.create("/" + path, data.toString().getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+            ZookeeperDiscoveryConnector.this.zk.create("/" + exposerName, data.toString().getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
                     CreateMode.PERSISTENT);
         }
     }
