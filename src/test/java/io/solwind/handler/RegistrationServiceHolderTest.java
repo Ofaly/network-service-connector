@@ -1,6 +1,7 @@
 package io.solwind.handler;
 
 import io.solwind.ITestService;
+import io.solwind.exception.ClassNotFoundRuntimeException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -30,7 +31,7 @@ public class RegistrationServiceHolderTest {
         assertNull(registrationServiceHolder.getShortDescription());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ClassNotFoundRuntimeException.class)
     public void createWithNotexistClass() throws Exception {
         new RegistrationServiceHolder("host:port, io.solwind.ITestService1".getBytes());
     }
