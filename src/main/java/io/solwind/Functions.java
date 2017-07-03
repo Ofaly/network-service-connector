@@ -2,7 +2,9 @@ package io.solwind;
 
 import java.io.*;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Created by theso on 6/19/2017.
@@ -20,7 +22,7 @@ public final class Functions {
             byte[] bytes = out.toByteArray();
             Byte[] result = new Byte[out.size()];
             int i = 0;
-            for (byte b: bytes) result[i++] = b;
+            for (byte b : bytes) result[i++] = b;
             return Optional.of(result);
         } catch (IOException e) {
             return Optional.empty();
@@ -41,8 +43,12 @@ public final class Functions {
     public static final Function<Byte[], byte[]> byteConverter = bytes -> {
         byte[] result = new byte[bytes.length];
         int i = 0;
-        for (Byte b: bytes) result[i++] = b;
+        for (Byte b : bytes) result[i++] = b;
         return result;
     };
+
+    public static <T> Function<Supplier<T>, Function<Consumer<T>, Runner>> asyncCall() {
+        return supplier -> consumer -> new Runner(supplier, consumer);
+    }
 
 }
