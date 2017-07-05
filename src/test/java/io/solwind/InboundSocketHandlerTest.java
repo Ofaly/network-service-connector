@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -102,6 +103,14 @@ public class InboundSocketHandlerTest {
     public void exceptionCaught() throws Exception {
         inboundSocketHandler.exceptionCaught(channelHandlerContext, new Exception("Test exception"));
         Mockito.verify(channelHandlerContext).close();
+    }
+
+    @Test
+    public void channelReadWithException() {
+        Mockito.when(channelHandlerContext.channel()).thenReturn(channel);
+        Mockito.when(services.containsKey(TestService.class)).thenReturn(false);
+        inboundSocketHandler.channelRead(channelHandlerContext,
+                Functions.byteConverter.apply(Functions.serialize.apply(new CallRequest("echoText", "io.solwind.TestService2", new Object[0])).get()));
     }
 
 }

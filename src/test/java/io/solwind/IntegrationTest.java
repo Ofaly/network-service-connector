@@ -3,6 +3,8 @@ package io.solwind;
 import io.solwind.api.IDiscovery;
 import io.solwind.api.IExposer;
 import io.solwind.impl.Cluster;
+import io.solwind.impl.NettyIoRmiConnectorClient;
+import io.solwind.impl.NettyIoRmiConnectorServer;
 import io.solwind.impl.ZookeeperDiscoveryConnector;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.server.ServerConfig;
@@ -25,6 +27,8 @@ public class IntegrationTest {
 
     private IExposer exposer;
 
+    private IExposer exposer1;
+
     private ITestService testService;
 
     final Properties properties = new Properties();
@@ -41,9 +45,12 @@ public class IntegrationTest {
         embeddedZookeeperServer();
 
         properties.setProperty("zookeeper.connection.host", "localhost:" + zkPort);
-        exposer = Cluster.exposer("testExposerName", "localhost:8090", new ZookeeperDiscoveryConnector(properties));
+        exposer = Cluster.exposer("testExposerName", "localhost:8090", new ZookeeperDiscoveryConnector(properties), new NettyIoRmiConnectorServer());
+        exposer1 = Cluster.exposer("testExposerName1", "localhost:8070", new ZookeeperDiscoveryConnector(properties), new NettyIoRmiConnectorServer());
         ITestService testServiceClass = new TestService();
+        ITestService testServiceClass1 = new TestService1();
         exposer.expose(testServiceClass, "1", "Test description");
+        exposer1.expose(testServiceClass1, "1", "Test description 2");
     }
 
     private void initPort() throws IOException {
@@ -56,7 +63,7 @@ public class IntegrationTest {
     public void test() throws IOException, InterruptedException {
 
         final IDiscovery discovery = Cluster.discovery(new ZookeeperDiscoveryConnector(properties));
-        testService = discovery.lookup(ITestService.class, "testExposerName");
+        testService = discovery.lookup(ITestService.class, "testExposerName", new NettyIoRmiConnectorClient());
 
         String responseText = testService.echoText();
         Assert.assertEquals("ok", responseText);

@@ -58,8 +58,8 @@ class Exposer implements IExposer {
     public <T> void expose(T testServiceClass, String version, String shortDescription) throws KeeperException, InterruptedException {
         serviceTable.put(testServiceClass.getClass().getInterfaces()[0], testServiceClass);
         LOGGER.info("\nExpose for {}", testServiceClass);
-        this.discoveryConfig.push(exposerName,
-                new RegistrationServiceHolder(host, version, shortDescription, testServiceClass.getClass().getInterfaces()[0]));
+        this.discoveryConfig.push(testServiceClass.getClass().getInterfaces()[0],
+                new RegistrationServiceHolder(host, version, shortDescription, exposerName));
     }
 
     public void stop() throws InterruptedException {

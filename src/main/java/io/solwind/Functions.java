@@ -1,6 +1,9 @@
 package io.solwind;
 
+import io.solwind.handler.RegistrationServiceHolder;
+
 import java.io.*;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -14,6 +17,15 @@ public final class Functions {
     private Functions() {
         //Private constructor.
     }
+
+
+    public static final Function<List<RegistrationServiceHolder>, Function<String, RegistrationServiceHolder>> searchRshByName
+            = registrationServiceHolders -> s -> {
+        for (RegistrationServiceHolder holder : registrationServiceHolders) {
+            if (holder.getExposerName().equals(s)) return holder;
+        }
+        return null;
+    };
 
     public static final Function<Object, Optional<Byte[]>> serialize = o -> {
         try {

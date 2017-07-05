@@ -1,8 +1,11 @@
 package io.solwind;
 
+import io.solwind.handler.RegistrationServiceHolder;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -35,6 +38,28 @@ public class FunctionsTest {
                 .apply((String o) -> callBackResult[0] = ++callBackResult[0]).call().call();
         while (!call.isCompleted());
         assertEquals(new Integer(1), callBackResult[0]);
+    }
+
+    @Test
+    public void searchRshByNameTest() {
+        List<RegistrationServiceHolder> holders = new ArrayList<>();
+        holders.add(new RegistrationServiceHolder("host:port", "001", "test descr", "testExposer"));
+        holders.add(new RegistrationServiceHolder("host:port", "001", "test descr", "testExposer1"));
+
+        RegistrationServiceHolder testExposer = Functions.searchRshByName.apply(holders).apply("testExposer");
+        assertNotNull(testExposer);
+
+    }
+
+    @Test
+    public void searchRshByNameWithWrongNameTest() {
+        List<RegistrationServiceHolder> holders = new ArrayList<>();
+        holders.add(new RegistrationServiceHolder("host:port", "001", "test descr", "testExposer"));
+        holders.add(new RegistrationServiceHolder("host:port", "001", "test descr", "testExposer1"));
+
+        RegistrationServiceHolder testExposer = Functions.searchRshByName.apply(holders).apply("testExposer2");
+        assertNull(testExposer);
+
     }
 
 

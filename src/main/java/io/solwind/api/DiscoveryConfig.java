@@ -4,6 +4,7 @@ import io.solwind.handler.RegistrationServiceHolder;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Properties;
 public interface DiscoveryConfig {
     void init();
     void connect() throws IOException, InterruptedException;
-    void push(String exposerName, RegistrationServiceHolder data) throws KeeperException, InterruptedException;
-    RegistrationServiceHolder retrieve(String path);
+    void push(Class className, RegistrationServiceHolder data) throws KeeperException, InterruptedException;
+    List<RegistrationServiceHolder> retrieveAll(String path);
     Properties props();
 }
