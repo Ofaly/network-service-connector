@@ -1,6 +1,8 @@
 package io.solwind.impl;
 
+import io.solwind.Functions;
 import io.solwind.api.DiscoveryConfig;
+import io.solwind.exception.DedicatedRuntimeException;
 import io.solwind.handler.RegistrationServiceHolder;
 import org.apache.zookeeper.*;
 import org.slf4j.Logger;
@@ -8,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -22,6 +24,7 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
     private String host;
     private ZooKeeper zk;
     private ZooKeeperClient zooKeeperClient;
+    private static final String SLASH = "/";
 
     public ZookeeperDiscoveryConnector(Properties properties) {
         this.properties = properties;
@@ -49,20 +52,23 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
         this.zk = this.zooKeeperClient.connect();
     }
 
-    public void push(String path, RegistrationServiceHolder data) throws KeeperException, InterruptedException {
-        this.zooKeeperClient.create(path, data);
+    public void push(Class className, RegistrationServiceHolder data) throws KeeperException, InterruptedException {
+        this.zooKeeperClient.create(className, data);
     }
 
-    public RegistrationServiceHolder retrieve(String path) {
+    public Set<RegistrationServiceHolder> retrieveAll(String path) {
         try {
-            return new RegistrationServiceHolder(ZookeeperDiscoveryConnector.this.zk.getData(path, true, null));
+            byte[] data = ZookeeperDiscoveryConnector.this.zk.getData(path, true, null);
+            Set<RegistrationServiceHolder> holders = new HashSet<>();
+            Functions.<Set<RegistrationServiceHolder>>deserialize().apply(data).ifPresent(holders::addAll);
+            return holders;
         } catch (KeeperException e) {
             LOGGER.info(e.getMessage(), e);
         } catch (InterruptedException e) {
             LOGGER.info(e.getMessage(), e);
             Thread.currentThread().interrupt();
         }
-        return null;
+        return Collections.emptySet();
     }
 
     public Properties props() {
@@ -91,14 +97,38 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
             zoo.close();
         }
 
-        public void create(String path, RegistrationServiceHolder data) throws
+        public void create(Class className, RegistrationServiceHolder data) throws
                 KeeperException, InterruptedException {
-            if (ZookeeperDiscoveryConnector.this.zk.exists("/" + path, true) != null) {
-                ZookeeperDiscoveryConnector.this.zk.delete("/" + path, 0);
+
+            String path = SLASH + className.getCanonicalName();
+            if (ZookeeperDiscoveryConnector.this.zk.exists(path, true) != null) {
+                byte[] s = ZookeeperDiscoveryConnector.this.zk.getData(path, true, null);
+                Functions.<Set<RegistrationServiceHolder>>deserialize().apply(s).ifPresent(holders -> {
+                    try {
+                        holders.add(data);
+                        Optional<Byte[]> apply = Functions.serialize.apply(holders);
+                        ZookeeperDiscoveryConnector.this.zk.delete(path, 0);
+                        apply.ifPresent(bytes -> createNewNode(path, bytes));
+                    } catch (KeeperException | InterruptedException e) {
+                        throw new DedicatedRuntimeException(e);
+                    }
+                });
+            } else {
+                Set<RegistrationServiceHolder> list = new HashSet<>();
+                list.add(data);
+                Functions.serialize.apply(list).ifPresent(bytes -> createNewNode(path, bytes));
             }
-            ZookeeperDiscoveryConnector.this.zk.create("/" + path, data.toString().getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                    CreateMode.PERSISTENT);
         }
+
+        private void createNewNode(String path, Byte[] bytes) {
+            try {
+                ZookeeperDiscoveryConnector.this.zk.create(path, Functions.byteConverter.apply(bytes), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                        CreateMode.PERSISTENT);
+            } catch (Exception e) {
+                throw new DedicatedRuntimeException(e);
+            }
+        }
+
     }
 
 }

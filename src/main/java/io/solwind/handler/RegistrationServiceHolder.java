@@ -1,27 +1,21 @@
 package io.solwind.handler;
 
-import java.util.Objects;
+import java.io.Serializable;
 
 /**
  * Created by theso on 6/24/2017.
  */
-public class RegistrationServiceHolder {
+public class RegistrationServiceHolder implements Serializable {
     private String host;
     private String version;
     private String shortDescription;
+    private String exposerName;
 
-    public RegistrationServiceHolder(String host, String version, String shortDescription) {
+    public RegistrationServiceHolder(String host, String version, String shortDescription, String exposerName) {
         this.host = host;
         this.version = version;
         this.shortDescription = shortDescription;
-    }
-
-    public RegistrationServiceHolder(byte[] data) {
-        Objects.nonNull(data);
-        String[] splittedString = new String(data).split(",");
-        this.host = splittedString[0];
-        this.version = splittedString.length > 1?splittedString[1]:null;
-        this.shortDescription = splittedString.length >= 3?splittedString[2]:null;
+        this.exposerName = exposerName;
     }
 
     public String getHost() {
@@ -36,8 +30,30 @@ public class RegistrationServiceHolder {
         return shortDescription;
     }
 
+    public String getExposerName() {
+        return exposerName;
+    }
+
     @Override
-    public String toString() {
-        return String.format("%s, %s, %s", host, version, shortDescription);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RegistrationServiceHolder holder = (RegistrationServiceHolder) o;
+
+        if (host != null ? !host.equals(holder.host) : holder.host != null) return false;
+        if (version != null ? !version.equals(holder.version) : holder.version != null) return false;
+        if (shortDescription != null ? !shortDescription.equals(holder.shortDescription) : holder.shortDescription != null)
+            return false;
+        return exposerName != null ? exposerName.equals(holder.exposerName) : holder.exposerName == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = host != null ? host.hashCode() : 0;
+        result = 31 * result + (version != null ? version.hashCode() : 0);
+        result = 31 * result + (shortDescription != null ? shortDescription.hashCode() : 0);
+        result = 31 * result + (exposerName != null ? exposerName.hashCode() : 0);
+        return result;
     }
 }

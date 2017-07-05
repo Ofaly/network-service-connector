@@ -86,4 +86,9 @@ public class NettyIoRmiConnectorClient implements RmiConnectorClient {
     public void reconnect() throws InterruptedException {
         connect();
     }
+
+    @Override
+    public RmiConnectorClient newClient(String host, int port) throws InterruptedException {
+        return new NettyIoRmiConnectorClient(host, port);
+    }
 }

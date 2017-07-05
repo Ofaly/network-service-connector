@@ -5,6 +5,7 @@ import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Created by solwind on 6/14/17.
@@ -12,7 +13,7 @@ import java.util.Properties;
 public interface DiscoveryConfig {
     void init();
     void connect() throws IOException, InterruptedException;
-    void push(String path, RegistrationServiceHolder data) throws KeeperException, InterruptedException;
-    RegistrationServiceHolder retrieve(String path);
+    void push(Class className, RegistrationServiceHolder data) throws KeeperException, InterruptedException;
+    Set<RegistrationServiceHolder> retrieveAll(String path);
     Properties props();
 }
