@@ -4,7 +4,6 @@ import io.solwind.handler.RegistrationServiceHolder;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
