@@ -60,8 +60,10 @@ public class IntegrationTest {
         exposer1 = Cluster.exposer("testExposerName1", "localhost:8070", new ZookeeperDiscoveryConnector(properties), new NettyIoRmiConnectorServer());
         ITestService testServiceClass = new TestService();
         ITestService testServiceClass1 = new TestService1();
+        ITestService3 testService3 = new TestService3();
         exposer1.expose(testServiceClass1, "1", "Test description 2");
         exposer.expose(testServiceClass, "1", "Test description");
+        exposer.expose(testService3, "1", "Test description");
     }
 
     private void initPort() throws IOException {
@@ -104,6 +106,16 @@ public class IntegrationTest {
             result[i[0]++] = iTestService.echoText();
         });
         Assert.assertTrue(checkResult.apply(result).apply(new String[]{"ok1", "ok"}));
+    }
+
+    @Test
+    public void exposeMoreThenOneServicesByOneExposer() throws IOException, InterruptedException {
+        ITestService testExposerName = Cluster.discovery(new ZookeeperDiscoveryConnector(properties)).lookup(ITestService.class, "testExposerName", new NettyIoRmiConnectorClient());
+        ITestService3 testExposerName2 = Cluster.discovery(new ZookeeperDiscoveryConnector(properties)).lookup(ITestService3.class, "testExposerName", new NettyIoRmiConnectorClient());
+
+        Assert.assertEquals("ok", testExposerName.echoText());
+        Assert.assertEquals("ok3", testExposerName2.test());
+
     }
 
     @After
