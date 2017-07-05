@@ -12,9 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -39,7 +37,7 @@ public class ClusterTest {
 
     @Test
     public void discovery() throws Exception {
-        List<RegistrationServiceHolder> holders = new ArrayList<>();
+        Set<RegistrationServiceHolder> holders = new HashSet<>();
         holders.add(new RegistrationServiceHolder("host:8080", "0", "some desc", "exposerName"));
         Mockito.when(discoveryConfig.retrieveAll("/".concat(ITestService.class.getCanonicalName())))
                 .thenReturn(holders);
@@ -54,7 +52,7 @@ public class ClusterTest {
     @Test
     public void lookUpList() throws IOException, InterruptedException {
 
-        List<RegistrationServiceHolder> holders = new ArrayList<>();
+        Set<RegistrationServiceHolder> holders = new HashSet<>();
         holders.add(new RegistrationServiceHolder("host:8080", "0", "some desc 1", "exposerOne"));
         holders.add(new RegistrationServiceHolder("host1:8081", "0", "some desc 2", "exposerTwo"));
 

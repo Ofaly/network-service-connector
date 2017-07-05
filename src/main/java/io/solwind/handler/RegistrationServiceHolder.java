@@ -33,4 +33,27 @@ public class RegistrationServiceHolder implements Serializable {
     public String getExposerName() {
         return exposerName;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RegistrationServiceHolder holder = (RegistrationServiceHolder) o;
+
+        if (host != null ? !host.equals(holder.host) : holder.host != null) return false;
+        if (version != null ? !version.equals(holder.version) : holder.version != null) return false;
+        if (shortDescription != null ? !shortDescription.equals(holder.shortDescription) : holder.shortDescription != null)
+            return false;
+        return exposerName != null ? exposerName.equals(holder.exposerName) : holder.exposerName == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = host != null ? host.hashCode() : 0;
+        result = 31 * result + (version != null ? version.hashCode() : 0);
+        result = 31 * result + (shortDescription != null ? shortDescription.hashCode() : 0);
+        result = 31 * result + (exposerName != null ? exposerName.hashCode() : 0);
+        return result;
+    }
 }

@@ -190,6 +190,7 @@
                             <exclude>io/solwind/impl/ZookeeperDiscoveryConnector$1.class</exclude>
                             <exclude>io/solwind/impl/NettyIoRmiConnectorServer$1.class</exclude>
                             <exclude>io/solwind/impl/NettyIoRmiConnectorClient$1.class</exclude>
+                            <exclude>io/solwind/handler/RegistrationServiceHolder.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>
@@ -221,6 +222,7 @@
                             <exclude>io/solwind/impl/ZookeeperDiscoveryConnector$1.class</exclude>
                             <exclude>io/solwind/impl/NettyIoRmiConnectorServer$1.class</exclude>
                             <exclude>io/solwind/impl/NettyIoRmiConnectorClient$1.class</exclude>
+                            <exclude>io/solwind/handler/RegistrationServiceHolder.class</exclude>
                         </excludes>
                     </instrumentation>
                     <formats>

@@ -3,8 +3,8 @@ package io.solwind;
 import io.solwind.handler.RegistrationServiceHolder;
 
 import java.io.*;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -19,7 +19,7 @@ public final class Functions {
     }
 
 
-    public static final Function<List<RegistrationServiceHolder>, Function<String, RegistrationServiceHolder>> searchRshByName
+    public static final Function<Set<RegistrationServiceHolder>, Function<String, RegistrationServiceHolder>> searchRshByName
             = registrationServiceHolders -> s -> {
         for (RegistrationServiceHolder holder : registrationServiceHolders) {
             if (holder.getExposerName().equals(s)) return holder;

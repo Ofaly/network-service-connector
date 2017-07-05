@@ -5,7 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -42,7 +44,7 @@ public class FunctionsTest {
 
     @Test
     public void searchRshByNameTest() {
-        List<RegistrationServiceHolder> holders = new ArrayList<>();
+        Set<RegistrationServiceHolder> holders = new HashSet<>();
         holders.add(new RegistrationServiceHolder("host:port", "001", "test descr", "testExposer"));
         holders.add(new RegistrationServiceHolder("host:port", "001", "test descr", "testExposer1"));
 
@@ -53,7 +55,7 @@ public class FunctionsTest {
 
     @Test
     public void searchRshByNameWithWrongNameTest() {
-        List<RegistrationServiceHolder> holders = new ArrayList<>();
+        Set<RegistrationServiceHolder> holders = new HashSet<>();
         holders.add(new RegistrationServiceHolder("host:port", "001", "test descr", "testExposer"));
         holders.add(new RegistrationServiceHolder("host:port", "001", "test descr", "testExposer1"));
 

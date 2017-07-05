@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by solwind on 6/14/17.
@@ -55,17 +56,14 @@ public final class Cluster implements IInjector {
                 String concat = "/".concat(service.getCanonicalName());
                 discoveryConfig.init();
                 discoveryConfig.connect();
-                List<RegistrationServiceHolder> holders = discoveryConfig.retrieveAll(concat);
+                Set<RegistrationServiceHolder> holders = discoveryConfig.retrieveAll(concat);
                 List<T> ts = new ArrayList<>();
                 for (RegistrationServiceHolder holder : holders) {
                     LOGGER.info("\nPrepare to create proxy for {}, {}", service, holder);
                     MethodInvocationHandler h = new MethodInvocationHandler();
                     String host = holder.getHost().split(":")[0];
                     Integer port = Integer.valueOf(holder.getHost().split(":")[1]);
-                    rmiConnectorClient.setHost(host);
-                    rmiConnectorClient.setPort(port);
-                    rmiConnectorClient.reconnect();
-                    h.setRmiConnectorClient(rmiConnectorClient);
+                    h.setRmiConnectorClient(rmiConnectorClient.newClient(host, port));
                     ts.add((T) Proxy.newProxyInstance(IDiscovery.class.getClassLoader(),
                             new Class<?>[]{service}, h));
                 }

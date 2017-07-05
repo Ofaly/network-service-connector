@@ -56,11 +56,11 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
         this.zooKeeperClient.create(className, data);
     }
 
-    public List<RegistrationServiceHolder> retrieveAll(String path) {
+    public Set<RegistrationServiceHolder> retrieveAll(String path) {
         try {
             byte[] data = ZookeeperDiscoveryConnector.this.zk.getData(path, true, null);
-            List<RegistrationServiceHolder> holders = new ArrayList<>();
-            Functions.<List<RegistrationServiceHolder>>deserialize().apply(data).ifPresent(holders::addAll);
+            Set<RegistrationServiceHolder> holders = new HashSet<>();
+            Functions.<Set<RegistrationServiceHolder>>deserialize().apply(data).ifPresent(holders::addAll);
             return holders;
         } catch (KeeperException e) {
             LOGGER.info(e.getMessage(), e);
@@ -68,7 +68,7 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
             LOGGER.info(e.getMessage(), e);
             Thread.currentThread().interrupt();
         }
-        return Collections.emptyList();
+        return Collections.emptySet();
     }
 
     public Properties props() {
@@ -103,7 +103,7 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
             String path = SLASH + className.getCanonicalName();
             if (ZookeeperDiscoveryConnector.this.zk.exists(path, true) != null) {
                 byte[] s = ZookeeperDiscoveryConnector.this.zk.getData(path, true, null);
-                Functions.<List<RegistrationServiceHolder>>deserialize().apply(s).ifPresent(holders -> {
+                Functions.<Set<RegistrationServiceHolder>>deserialize().apply(s).ifPresent(holders -> {
                     try {
                         holders.add(data);
                         Optional<Byte[]> apply = Functions.serialize.apply(holders);
@@ -114,7 +114,7 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
                     }
                 });
             } else {
-                List<RegistrationServiceHolder> list = new ArrayList();
+                Set<RegistrationServiceHolder> list = new HashSet<>();
                 list.add(data);
                 Functions.serialize.apply(list).ifPresent(bytes -> createNewNode(path, bytes));
             }
