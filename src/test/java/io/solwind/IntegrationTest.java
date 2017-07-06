@@ -32,6 +32,8 @@ public class IntegrationTest {
 
     private IExposer exposer1;
 
+    private IExposer exposer3;
+
     private ITestService testService;
 
     final Properties properties = new Properties();
@@ -58,10 +60,14 @@ public class IntegrationTest {
         properties.setProperty("zookeeper.connection.host", "localhost:" + zkPort);
         exposer = Cluster.exposer("testExposerName", "localhost:8090", new ZookeeperDiscoveryConnector(properties), new NettyIoRmiConnectorServer());
         exposer1 = Cluster.exposer("testExposerName1", "localhost:8070", new ZookeeperDiscoveryConnector(properties), new NettyIoRmiConnectorServer());
+        exposer3 = Cluster.exposer("testExposerName3", "localhost:8071", new ZookeeperDiscoveryConnector(properties), new NettyIoRmiConnectorServer());
         ITestService testServiceClass = new TestService();
         ITestService testServiceClass1 = new TestService1();
+        ITestService3 testService3 = new TestService3();
         exposer1.expose(testServiceClass1, "1", "Test description 2");
         exposer.expose(testServiceClass, "1", "Test description");
+        exposer.expose(testService3, "1", "Test description");
+        exposer3.expose(testService3, "1", "Test description", token -> token.equals("000000"));
     }
 
     private void initPort() throws IOException {
@@ -100,10 +106,39 @@ public class IntegrationTest {
         Assert.assertTrue(services.size() == 2);
         String[] result = {null, null};
         final int[] i = {0};
-        services.forEach(iTestService -> {
-            result[i[0]++] = iTestService.echoText();
-        });
+        services.forEach(iTestService -> result[i[0]++] = iTestService.echoText());
         Assert.assertTrue(checkResult.apply(result).apply(new String[]{"ok1", "ok"}));
+    }
+
+    @Test
+    public void exposeMoreThenOneServicesByOneExposer() throws IOException, InterruptedException {
+        ITestService testExposerName = Cluster.discovery(new ZookeeperDiscoveryConnector(properties)).lookup(ITestService.class, "testExposerName", new NettyIoRmiConnectorClient());
+        ITestService3 testExposerName2 = Cluster.discovery(new ZookeeperDiscoveryConnector(properties)).lookup(ITestService3.class, "testExposerName", new NettyIoRmiConnectorClient());
+
+        Assert.assertEquals("ok", testExposerName.echoText());
+        Assert.assertEquals("ok3", testExposerName2.test());
+
+    }
+
+    @Test
+    public void lookupWithSecurity() throws IOException, InterruptedException {
+        IDiscovery discovery = Cluster.discovery(new ZookeeperDiscoveryConnector(properties));
+        ITestService3 testExposerName3 = discovery.lookup(ITestService3.class, "testExposerName3", new NettyIoRmiConnectorClient(), "000000");
+        Assert.assertEquals("ok3", testExposerName3.test());
+    }
+
+    @Test
+    public void lookupWithWrongSecurity() throws IOException, InterruptedException {
+        IDiscovery discovery = Cluster.discovery(new ZookeeperDiscoveryConnector(properties));
+        ITestService3 testExposerName3 = discovery.lookup(ITestService3.class, "testExposerName3", new NettyIoRmiConnectorClient(), "0000000");
+        Assert.assertNull(testExposerName3.test());
+    }
+
+    @Test
+    public void lookupWithNullSecurity() throws IOException, InterruptedException {
+        IDiscovery discovery = Cluster.discovery(new ZookeeperDiscoveryConnector(properties));
+        ITestService3 testExposerName3 = discovery.lookup(ITestService3.class, "testExposerName3", new NettyIoRmiConnectorClient());
+        Assert.assertNull(testExposerName3.test());
     }
 
     @After
@@ -111,6 +146,7 @@ public class IntegrationTest {
 //        zooKeeperServer.stop();
         exposer.stop();
         exposer1.stop();
+        exposer3.stop();
     }
 
     private void embeddedZookeeperServer() {

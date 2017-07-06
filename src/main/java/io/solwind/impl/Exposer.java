@@ -3,6 +3,7 @@ package io.solwind.impl;
 import io.solwind.api.DiscoveryConfig;
 import io.solwind.api.IExposer;
 import io.solwind.api.RmiConnectorServer;
+import io.solwind.api.TokenSecurityHandler;
 import io.solwind.handler.RegistrationServiceHolder;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ class Exposer implements IExposer {
 
 
     private Map<Class, Object> serviceTable = Collections.synchronizedMap(new HashMap<Class, Object>());
+    private Map<Class, TokenSecurityHandler<Boolean>> handlerTable = Collections.synchronizedMap(new HashMap<Class, TokenSecurityHandler<Boolean>>());
 
     public Exposer(String exposerName, String host, DiscoveryConfig discoveryConfig, RmiConnectorServer rmiConnectorServer) throws IOException, InterruptedException {
         this.exposerName = exposerName;
@@ -38,6 +40,7 @@ class Exposer implements IExposer {
         String[] hostSplit = this.host.split(":");
         rmiConnectorServer.port(hostSplit.length > 1?new Integer(hostSplit[1]):80);
         rmiConnectorServer.serviceTable(serviceTable);
+        rmiConnectorServer.handlerTable(handlerTable);
         new Thread(rmiConnectorServer).start();
     }
 
@@ -51,12 +54,22 @@ class Exposer implements IExposer {
         String[] hostSplit = this.host.split(":");
         rmiConnectorServer.port(hostSplit.length > 1?new Integer(hostSplit[1]):80);
         rmiConnectorServer.serviceTable(serviceTable);
+        rmiConnectorServer.handlerTable(handlerTable);
         new Thread(rmiConnectorServer).start();
     }
 
 
     public <T> void expose(T testServiceClass, String version, String shortDescription) throws KeeperException, InterruptedException {
         serviceTable.put(testServiceClass.getClass().getInterfaces()[0], testServiceClass);
+        LOGGER.info("\nExpose for {}", testServiceClass);
+        this.discoveryConfig.push(testServiceClass.getClass().getInterfaces()[0],
+                new RegistrationServiceHolder(host, version, shortDescription, exposerName));
+    }
+
+    @Override
+    public <T> void expose(T testServiceClass, String version, String shortDescription, TokenSecurityHandler tokenSecurityHandler) throws KeeperException, InterruptedException {
+        serviceTable.put(testServiceClass.getClass().getInterfaces()[0], testServiceClass);
+        handlerTable.put(testServiceClass.getClass().getInterfaces()[0], tokenSecurityHandler);
         LOGGER.info("\nExpose for {}", testServiceClass);
         this.discoveryConfig.push(testServiceClass.getClass().getInterfaces()[0],
                 new RegistrationServiceHolder(host, version, shortDescription, exposerName));

@@ -16,14 +16,19 @@ import static io.solwind.Functions.serialize;
 public class MethodInvocationHandler implements InvocationHandler {
 
     private RmiConnectorClient rmiConnectorClient;
+    private String token;
 
     public void setRmiConnectorClient(RmiConnectorClient rmiConnectorClient) {
         this.rmiConnectorClient = rmiConnectorClient;
     }
 
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         rmiConnectorClient.reconnect();
-        serialize.apply(new CallRequest(method.getName(), method.getDeclaringClass().getCanonicalName(), args))
+        serialize.apply(new CallRequest(method.getName(), method.getDeclaringClass().getCanonicalName(), args, token))
                 .ifPresent(bytes -> rmiConnectorClient.writeAndFlush(byteConverter.apply(bytes)));
         rmiConnectorClient.waitForResponse();
         CallResponse response = rmiConnectorClient.lastResponse();
