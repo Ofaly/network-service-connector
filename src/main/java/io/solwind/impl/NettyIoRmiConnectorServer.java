@@ -13,6 +13,7 @@ import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.solwind.api.RmiConnectorServer;
+import io.solwind.api.TokenSecurityHandler;
 import io.solwind.handler.InboundSocketHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class NettyIoRmiConnectorServer implements RmiConnectorServer {
     public static final Logger LOGGER = LoggerFactory.getLogger(NettyIoRmiConnectorServer.class);
 
     private Map<Class, Object> serviceTable;
+    private Map<Class, TokenSecurityHandler<Boolean>> handlerTable;
 
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
@@ -34,6 +36,11 @@ public class NettyIoRmiConnectorServer implements RmiConnectorServer {
 
     public void serviceTable(Map<Class, Object> serviceTable) {
         this.serviceTable = serviceTable;
+    }
+
+    @Override
+    public void handlerTable(Map<Class, TokenSecurityHandler<Boolean>> handlerTable) {
+        this.handlerTable = handlerTable;
     }
 
     @Override
@@ -63,7 +70,7 @@ public class NettyIoRmiConnectorServer implements RmiConnectorServer {
                             ChannelPipeline p = ch.pipeline();
                             p.addLast(new ByteArrayDecoder());
                             p.addLast(new ByteArrayEncoder());
-                            p.addLast(new InboundSocketHandler(serviceTable));
+                            p.addLast(new InboundSocketHandler(serviceTable, handlerTable));
                         }
                     });
             b.bind(port).sync().channel().closeFuture().sync();

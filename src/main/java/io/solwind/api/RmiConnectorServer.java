@@ -8,5 +8,6 @@ import java.util.Map;
 public interface RmiConnectorServer extends Runnable {
     void port(int port);
     void serviceTable(Map<Class, Object> serviceTable);
+    void handlerTable(Map<Class, TokenSecurityHandler<Boolean>> handlerTable);
     void stop();
 }

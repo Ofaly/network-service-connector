@@ -3,6 +3,8 @@ package io.solwind.handler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.solwind.Functions;
+import io.solwind.api.TokenSecurityHandler;
+import io.solwind.exception.SecurityRuntimeException;
 import io.solwind.protocol.CallRequest;
 import io.solwind.protocol.CallResponse;
 import org.slf4j.Logger;
@@ -21,16 +23,21 @@ public class InboundSocketHandler extends ChannelInboundHandlerAdapter {
     public static final Logger LOGGER = LoggerFactory.getLogger(InboundSocketHandler.class);
 
     private final Map<Class, Object> serviceTable;
+    private final Map<Class, TokenSecurityHandler<Boolean>> handlerTable;
 
-    public InboundSocketHandler(Map<Class, Object> serviceTable) {
+    public InboundSocketHandler(Map<Class, Object> serviceTable, Map<Class, TokenSecurityHandler<Boolean>> handlerTable) {
         this.serviceTable = serviceTable;
+        this.handlerTable = handlerTable;
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        Functions.<CallRequest>deserialize().apply((byte[])msg).ifPresent(obj -> {
+        Functions.<CallRequest>deserialize().apply((byte[]) msg).ifPresent(obj -> {
             try {
                 Class clazz = Class.forName(obj.getClazz());
+                if (handlerTable.containsKey(clazz)
+                        && !handlerTable.get(clazz).handle(obj.getToken()))
+                    throw new SecurityRuntimeException("Wrong token!!");
                 if (serviceTable.containsKey(clazz)) {
                     final Object o = serviceTable.get(clazz);
                     final Method method = o.getClass().getMethod(obj.getMethodName(),
@@ -39,10 +46,12 @@ public class InboundSocketHandler extends ChannelInboundHandlerAdapter {
                     ctx.channel().close();
                     return;
                 }
-                ctx.channel().close();
+            } catch (SecurityRuntimeException e) {
+                throw e;
             } catch (Exception e) {
-                ctx.channel().close();
                 LOGGER.info(e.getMessage(), e);
+            } finally {
+                ctx.channel().close();
             }
         });
     }

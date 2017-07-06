@@ -16,6 +16,14 @@ public class CallRequest implements Serializable {
     private String methodName;
     private String clazz;
     private Object[] args;
+    private String token;
+
+    public CallRequest(String methodName, String clazz, Object[] args, String token) {
+        this.methodName = methodName;
+        this.clazz = clazz;
+        this.args = args;
+        this.token = token;
+    }
 
     public CallRequest(String methodName, String clazz, Object[] args) {
         this.methodName = methodName;
@@ -39,6 +47,7 @@ public class CallRequest implements Serializable {
         out.writeObject(methodName);
         out.writeObject(clazz);
         out.writeObject(args);
+        out.writeObject(token);
     }
 
     private void readObject(java.io.ObjectInputStream stream)
@@ -46,6 +55,7 @@ public class CallRequest implements Serializable {
         methodName = (String) stream.readObject();
         clazz = (String) stream.readObject();
         args = (Object[]) stream.readObject();
+        token = (String) stream.readObject();
     }
 
     public String getMethodName() {
@@ -58,5 +68,9 @@ public class CallRequest implements Serializable {
 
     public String getClazz() {
         return clazz;
+    }
+
+    public String getToken() {
+        return token;
     }
 }

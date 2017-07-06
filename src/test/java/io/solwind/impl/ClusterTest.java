@@ -44,9 +44,19 @@ public class ClusterTest {
         ITestService lookup = Cluster.discovery(discoveryConfig).lookup(ITestService.class, "exposerName", rmiConnectorClient);
         Mockito.verify(discoveryConfig).init();
         Mockito.verify(discoveryConfig).connect();
-        Mockito.verify(rmiConnectorClient).setPort(8080);
-        Mockito.verify(rmiConnectorClient).setHost("host");
-        Mockito.verify(rmiConnectorClient).reconnect();
+        Mockito.verify(rmiConnectorClient).newClient("host", 8080);
+    }
+
+    @Test
+    public void lookupWithToken() throws Exception {
+        Set<RegistrationServiceHolder> holders = new HashSet<>();
+        holders.add(new RegistrationServiceHolder("host:8080", "0", "some desc", "exposerName"));
+        Mockito.when(discoveryConfig.retrieveAll("/".concat(ITestService.class.getCanonicalName())))
+                .thenReturn(holders);
+        ITestService lookup = Cluster.discovery(discoveryConfig).lookup(ITestService.class, "exposerName", rmiConnectorClient, "123456");
+        Mockito.verify(discoveryConfig).init();
+        Mockito.verify(discoveryConfig).connect();
+        Mockito.verify(rmiConnectorClient).newClient("host", 8080);
     }
 
     @Test

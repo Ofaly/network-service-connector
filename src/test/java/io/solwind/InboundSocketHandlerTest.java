@@ -1,7 +1,10 @@
 package io.solwind;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.solwind.api.TokenSecurityHandler;
+import io.solwind.exception.SecurityRuntimeException;
 import io.solwind.handler.InboundSocketHandler;
 import io.solwind.protocol.CallRequest;
 import org.junit.Before;
@@ -26,6 +29,9 @@ public class InboundSocketHandlerTest {
     @Mock
     private Map<Class, Object> services;
 
+    @Mock
+    private Map<Class, TokenSecurityHandler<Boolean>> handlers;
+
     private InboundSocketHandler inboundSocketHandler;
 
     @Mock
@@ -37,7 +43,7 @@ public class InboundSocketHandlerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        inboundSocketHandler = new InboundSocketHandler(services);
+        inboundSocketHandler = new InboundSocketHandler(services, handlers);
     }
 
     @Test
@@ -48,6 +54,29 @@ public class InboundSocketHandlerTest {
         inboundSocketHandler.channelRead(channelHandlerContext,
                 Functions.byteConverter.apply(Functions.serialize.apply(new CallRequest("echoText", "io.solwind.TestService", null)).get()));
         Mockito.verify(channel).writeAndFlush(Mockito.any());
+    }
+
+    @Test
+    public void channelReadWithCorrectToken() throws Exception {
+        Mockito.when(channelHandlerContext.channel()).thenReturn(channel);
+        Mockito.when(services.containsKey(TestService.class)).thenReturn(true);
+        Mockito.when(handlers.containsKey(TestService.class)).thenReturn(true);
+        Mockito.when(services.get(TestService.class)).thenReturn(new TestService());
+        Mockito.when(handlers.get(TestService.class)).thenReturn(token -> token.equals("12345"));
+        inboundSocketHandler.channelRead(channelHandlerContext,
+                Functions.byteConverter.apply(Functions.serialize.apply(new CallRequest("echoText", "io.solwind.TestService", null, "12345")).get()));
+        Mockito.verify(channel).writeAndFlush(Mockito.any());
+    }
+
+    @Test(expected = SecurityRuntimeException.class)
+    public void channelReadWithWrongToken() throws Exception {
+        Mockito.when(channelHandlerContext.channel()).thenReturn(channel);
+        Mockito.when(services.containsKey(TestService.class)).thenReturn(true);
+        Mockito.when(handlers.containsKey(TestService.class)).thenReturn(true);
+        Mockito.when(services.get(TestService.class)).thenReturn(new TestService());
+        Mockito.when(handlers.get(TestService.class)).thenReturn(token -> token.equals("123456"));
+        inboundSocketHandler.channelRead(channelHandlerContext,
+                Functions.byteConverter.apply(Functions.serialize.apply(new CallRequest("echoText", "io.solwind.TestService", null, "12345")).get()));
     }
 
     @Test

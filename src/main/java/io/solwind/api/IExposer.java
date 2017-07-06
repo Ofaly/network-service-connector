@@ -7,5 +7,6 @@ import org.apache.zookeeper.KeeperException;
  */
 public interface IExposer {
     <T> void expose(T testServiceClass, String version, String shortDescription) throws KeeperException, InterruptedException;
+    <T> void expose(T testServiceClass, String version, String shortDescription, TokenSecurityHandler tokenSecurityHandler) throws KeeperException, InterruptedException;
     void stop() throws InterruptedException;
 }
