@@ -6,8 +6,8 @@ import java.io.Serializable;
  * Created by theso on 6/19/2017.
  */
 public class CustomDto implements Serializable {
-    private final String str;
-    private final Integer intg;
+    final String str;
+    final Integer intg;
 
     public CustomDto(String str, Integer intg) {
         this.str = str;

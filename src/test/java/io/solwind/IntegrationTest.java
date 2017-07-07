@@ -97,6 +97,14 @@ public class IntegrationTest {
         String responseArgStr = testService.args("test request");
         Assert.assertEquals("response for arg test request", responseArgStr);
 
+        List<CustomDto> list = testService.list();
+        Assert.assertNotNull(list);
+        Assert.assertTrue(list.size() == 4);
+        Assert.assertTrue(list.get(0).intg == 1);
+        Assert.assertTrue(list.get(1).intg == 2);
+        Assert.assertTrue(list.get(2).intg == 3);
+        Assert.assertTrue(list.get(3).intg == 4);
+
     }
 
     @Test
