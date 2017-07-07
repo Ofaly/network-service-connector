@@ -30,10 +30,13 @@ public class TestService implements ITestService {
     @Override
     public List<CustomDto> list() {
         List<CustomDto> customDtos = new ArrayList<>();
+        for (int i = 0; i<=10000; i++)
         customDtos.add(new CustomDto("test1", 1));
-        customDtos.add(new CustomDto("test2", 2));
-        customDtos.add(new CustomDto("test3", 3));
-        customDtos.add(new CustomDto("test4", 4));
         return customDtos;
+    }
+
+    @Override
+    public String stringWithTimeout() throws InterruptedException {
+        return "test";
     }
 }

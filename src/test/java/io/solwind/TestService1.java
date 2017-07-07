@@ -36,4 +36,9 @@ public class TestService1 implements ITestService {
         customDtos.add(new CustomDto("test4", 4));
         return customDtos;
     }
+
+    @Override
+    public String stringWithTimeout() throws InterruptedException {
+        return "test";
+    }
 }

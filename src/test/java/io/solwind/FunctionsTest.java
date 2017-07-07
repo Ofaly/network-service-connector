@@ -4,10 +4,7 @@ import io.solwind.handler.RegistrationServiceHolder;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -62,6 +59,11 @@ public class FunctionsTest {
         RegistrationServiceHolder testExposer = Functions.searchRshByName.apply(holders).apply("testExposer2");
         assertNull(testExposer);
 
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void deserializeWitException() {
+        Functions.deserialize().apply(null).get();
     }
 
 
