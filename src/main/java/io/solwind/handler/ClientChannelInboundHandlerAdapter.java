@@ -38,6 +38,7 @@ public class ClientChannelInboundHandlerAdapter extends ChannelInboundHandlerAda
 
     public CallResponse getResponse() {
         if (byteArrayOutputStream.size() == 0) return null;
+//        System.out.println("Size: " + humanReadableByteCount(byteArrayOutputStream.size(), true));
         try(ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()))) {
             return (CallResponse) stream.readObject();
         } catch (Exception e) {
@@ -46,4 +47,13 @@ public class ClientChannelInboundHandlerAdapter extends ChannelInboundHandlerAda
             byteArrayOutputStream = new ByteArrayOutputStream();
         }
     }
+
+//    public static String humanReadableByteCount(long bytes, boolean si) {
+//        int unit = si ? 1000 : 1024;
+//        if (bytes < unit) return bytes + " B";
+//        int exp = (int) (Math.log(bytes) / Math.log(unit));
+//        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
+//        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+//    }
+
 }

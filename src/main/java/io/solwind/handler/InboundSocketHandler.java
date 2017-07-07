@@ -42,7 +42,9 @@ public class InboundSocketHandler extends ChannelInboundHandlerAdapter {
                     final Object o = serviceTable.get(clazz);
                     final Method method = o.getClass().getMethod(obj.getMethodName(),
                             convertObjectsToTypes(obj.getArgs() == null ? new Object[0] : obj.getArgs()));
-                    Functions.serialize.apply(new CallResponse(method.invoke(o, obj.getArgs()))).ifPresent(bytes -> ctx.channel().writeAndFlush(Functions.byteConverter.apply(bytes)));
+                    CallResponse response = new CallResponse(method.invoke(o, obj.getArgs()));
+//                    System.out.println("Serialize: " + humanReadableByteCount(Functions.serialize.apply(response).get().length, true));
+                    Functions.serialize.apply(response).ifPresent(bytes -> ctx.channel().writeAndFlush(Functions.byteConverter.apply(bytes)));
                     ctx.channel().close();
                     return;
                 }
@@ -55,6 +57,14 @@ public class InboundSocketHandler extends ChannelInboundHandlerAdapter {
             }
         });
     }
+
+//    public static String humanReadableByteCount(long bytes, boolean si) {
+//        int unit = si ? 1000 : 1024;
+//        if (bytes < unit) return bytes + " B";
+//        int exp = (int) (Math.log(bytes) / Math.log(unit));
+//        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
+//        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+//    }
 
     private Class[] convertObjectsToTypes(Object[] objects) {
         return Arrays.stream(objects).map(Object::getClass).collect(Collectors.toList()).toArray(new Class[]{});
