@@ -27,7 +27,7 @@ public class MethodInvocationHandler implements InvocationHandler {
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        rmiConnectorClient.reconnect();
+//        rmiConnectorClient.reconnect();
         serialize.apply(new CallRequest(method.getName(), method.getDeclaringClass().getCanonicalName(), args, token))
                 .ifPresent(bytes -> rmiConnectorClient.writeAndFlush(byteConverter.apply(bytes)));
         rmiConnectorClient.waitForResponse();

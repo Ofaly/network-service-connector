@@ -22,7 +22,7 @@ public final class Functions {
     public static final Function<Set<RegistrationServiceHolder>, Function<String, RegistrationServiceHolder>> searchRshByName
             = registrationServiceHolders -> s -> {
         for (RegistrationServiceHolder holder : registrationServiceHolders) {
-            if (holder.getExposerName().equals(s)) return holder;
+            if (s.equals(holder.getExposerName())) return holder;
         }
         return null;
     };
