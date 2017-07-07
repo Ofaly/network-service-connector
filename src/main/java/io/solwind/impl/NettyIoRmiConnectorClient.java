@@ -1,10 +1,7 @@
 package io.solwind.impl;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -13,9 +10,8 @@ import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.solwind.api.RmiConnectorClient;
+import io.solwind.exception.DedicatedRuntimeException;
 import io.solwind.handler.ClientChannelInboundHandlerAdapter;
-
-import java.net.SocketAddress;
 
 /**
  * Created by theso on 6/30/2017.
@@ -69,19 +65,17 @@ public class NettyIoRmiConnectorClient implements RmiConnectorClient {
 
     @Override
     public <T> T lastResponse() {
-        try {
-            return (T) clientChannelInboundHandlerAdapter.getResponse();
-        } finally {
-            clientChannelInboundHandlerAdapter.resetResponse();
-        }
+        return (T) clientChannelInboundHandlerAdapter.getResponse();
     }
 
     @Override
     public void writeAndFlush(byte[] data) {
         try {
+            clientChannelInboundHandlerAdapter = new ClientChannelInboundHandlerAdapter();
             channelFuture = bootstrap.connect(host, port).sync();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            throw new DedicatedRuntimeException(e);
         }
         channelFuture.channel().writeAndFlush(data);
     }

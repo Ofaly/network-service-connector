@@ -1,6 +1,7 @@
 package io.solwind;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.solwind.exception.DedicatedRuntimeException;
 import io.solwind.handler.ClientChannelInboundHandlerAdapter;
 import io.solwind.protocol.CallResponse;
 import org.junit.Before;
@@ -45,7 +46,7 @@ public class ClientChannelInboundHandlerAdapterTest {
         assertEquals("testvalue", clientChannelInboundHandlerAdapter.getResponse().getResponse());
     }
 
-    @Test
+    @Test(expected = DedicatedRuntimeException.class)
     public void channelReadWithNoSerializableData() throws Exception {
         clientChannelInboundHandlerAdapter.channelRead(channelHandlerContext, new byte[]{1,2,3,4});
         assertNull(clientChannelInboundHandlerAdapter.getResponse());
@@ -64,11 +65,7 @@ public class ClientChannelInboundHandlerAdapterTest {
     }
 
     @Test
-    public void resetResponse() throws Exception {
-        clientChannelInboundHandlerAdapter.channelRead(channelHandlerContext,
-                Functions.byteConverter.apply(Functions.serialize.apply(new CallResponse("testvalue")).get()));
-        assertEquals("testvalue", clientChannelInboundHandlerAdapter.getResponse().getResponse());
-        clientChannelInboundHandlerAdapter.resetResponse();
+    public void channelReadWithNullData() throws Exception {
         assertNull(clientChannelInboundHandlerAdapter.getResponse());
     }
 

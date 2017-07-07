@@ -11,4 +11,5 @@ public interface ITestService {
     CustomDto customDto();
     String args(String test);
     List<CustomDto> list();
+    String stringWithTimeout() throws InterruptedException;
 }
