@@ -15,6 +15,8 @@ import io.netty.handler.logging.LoggingHandler;
 import io.solwind.api.RmiConnectorClient;
 import io.solwind.handler.ClientChannelInboundHandlerAdapter;
 
+import java.net.SocketAddress;
+
 /**
  * Created by theso on 6/30/2017.
  */
@@ -25,6 +27,8 @@ public class NettyIoRmiConnectorClient implements RmiConnectorClient {
     private String host;
 
     private Integer port;
+
+    private Bootstrap bootstrap;
 
     private ClientChannelInboundHandlerAdapter clientChannelInboundHandlerAdapter;
 
@@ -49,7 +53,7 @@ public class NettyIoRmiConnectorClient implements RmiConnectorClient {
 
     private void connect() throws InterruptedException {
         clientChannelInboundHandlerAdapter = new ClientChannelInboundHandlerAdapter();
-        Bootstrap bootstrap = new Bootstrap().group(new NioEventLoopGroup()).channel(NioSocketChannel.class)
+        bootstrap = new Bootstrap().group(new NioEventLoopGroup()).channel(NioSocketChannel.class)
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .handler(new ChannelInitializer<SocketChannel>() {
@@ -74,6 +78,11 @@ public class NettyIoRmiConnectorClient implements RmiConnectorClient {
 
     @Override
     public void writeAndFlush(byte[] data) {
+        try {
+            channelFuture = bootstrap.connect(host, port).sync();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         channelFuture.channel().writeAndFlush(data);
     }
 
