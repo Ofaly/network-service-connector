@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/thesolwind/network-service-connector.svg?branch=master)](https://travis-ci.org/thesolwind/network-service-connector)
 [![codecov](https://codecov.io/gh/thesolwind/network-service-connector/branch/master/graph/badge.svg)](https://codecov.io/gh/thesolwind/network-service-connector)
-# Distributed service injector.[DRAFT]
+# Network service connector.[DRAFT]
 
 This library allows you to easy create communication between different services which run on different hosts. It uses the Apache zookeeper to find location of services, the netty io to connnect beatween services and java serialization to serialize queries beatween services.
 
@@ -8,8 +8,8 @@ This library allows you to easy create communication between different services 
 ```xml
 <dependency>
     <groupId>io.solwind</groupId>
-    <artifactId>distributed-service-injector</artifactId>
-    <version>0.0.2</version>
+    <artifactId>network-service-connector</artifactId>
+    <version>0.0.4</version>
 </dependency>
 ```
 
