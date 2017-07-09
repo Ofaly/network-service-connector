@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/thesolwind/distributed-service-injector.svg?branch=master)](https://travis-ci.org/thesolwind/distributed-service-injector)
-[![codecov](https://codecov.io/gh/thesolwind/distributed-service-injector/branch/master/graph/badge.svg)](https://codecov.io/gh/thesolwind/distributed-service-injector)
+[![Build Status](https://travis-ci.org/thesolwind/distributed-service-injector.svg?branch=master)](https://travis-ci.org/thesolwind/network-service-connector)
+[![codecov](https://codecov.io/gh/thesolwind/distributed-service-injector/branch/master/graph/badge.svg)](https://codecov.io/gh/thesolwind/network-service-connector)
 # Distributed service injector.[DRAFT]
 
 This library allows you to easy create communication between different services which run on different hosts. It uses the Apache zookeeper to find location of services, the netty io to connnect beatween services and java serialization to serialize queries beatween services.
