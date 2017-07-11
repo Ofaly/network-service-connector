@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 /**
  * Created by theso on 7/1/2017.
  */
-public class ClusterTest {
+public class NetworkTest {
 
     @Mock
     private DiscoveryConfig discoveryConfig;
@@ -41,7 +41,7 @@ public class ClusterTest {
         holders.add(new RegistrationServiceHolder("host:8080", "0", "some desc", "exposerName"));
         Mockito.when(discoveryConfig.retrieveAll("/".concat(ITestService.class.getCanonicalName())))
                 .thenReturn(holders);
-        ITestService lookup = Cluster.discovery(discoveryConfig).lookup(ITestService.class, "exposerName", rmiConnectorClient);
+        ITestService lookup = Network.newServiceRegistrarClient(discoveryConfig).create(ITestService.class, "exposerName", rmiConnectorClient);
         Mockito.verify(discoveryConfig).init();
         Mockito.verify(discoveryConfig).connect();
         Mockito.verify(rmiConnectorClient).newClient("host", 8080);
@@ -53,7 +53,7 @@ public class ClusterTest {
         holders.add(new RegistrationServiceHolder("host:8080", "0", "some desc", "exposerName"));
         Mockito.when(discoveryConfig.retrieveAll("/".concat(ITestService.class.getCanonicalName())))
                 .thenReturn(holders);
-        ITestService lookup = Cluster.discovery(discoveryConfig).lookup(ITestService.class, "exposerName", rmiConnectorClient, "123456");
+        ITestService lookup = Network.newServiceRegistrarClient(discoveryConfig).create(ITestService.class, "exposerName", rmiConnectorClient, "123456");
         Mockito.verify(discoveryConfig).init();
         Mockito.verify(discoveryConfig).connect();
         Mockito.verify(rmiConnectorClient).newClient("host", 8080);
@@ -69,24 +69,24 @@ public class ClusterTest {
         Mockito.when(discoveryConfig.retrieveAll("/" + ITestService.class.getCanonicalName()))
                 .thenReturn(holders);
 
-        List<ITestService> services = Cluster.discovery(discoveryConfig).lookupAll(ITestService.class, rmiConnectorClient);
+        List<ITestService> services = Network.newServiceRegistrarClient(discoveryConfig).createForAll(ITestService.class, rmiConnectorClient);
         assertTrue(services.size() == 2);
     }
 
     @Test
     public void exposer() throws Exception {
         Properties properties = new Properties();
-        properties.setProperty("expose.host", "host");
+        properties.setProperty("register.host", "host");
         Mockito.when(discoveryConfig.props()).thenReturn(properties);
-        Cluster.exposer(discoveryConfig, rmiConnectorServer);
+        Network.newServiceRegistrar(discoveryConfig, rmiConnectorServer);
     }
 
     @Test
     public void exposerWithHost() throws Exception {
         Properties properties = new Properties();
-        properties.setProperty("expose.host", "host");
+        properties.setProperty("register.host", "host");
         Mockito.when(discoveryConfig.props()).thenReturn(properties);
-        Cluster.exposer("testExposer", "host:8080", discoveryConfig, rmiConnectorServer);
+        Network.newServiceRegistrar("testExposer", "host:8080", discoveryConfig, rmiConnectorServer);
     }
 
 }

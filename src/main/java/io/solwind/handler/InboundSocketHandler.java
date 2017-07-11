@@ -43,7 +43,7 @@ public class InboundSocketHandler extends ChannelInboundHandlerAdapter {
                     final Method method = o.getClass().getMethod(obj.getMethodName(),
                             convertObjectsToTypes(obj.getArgs() == null ? new Object[0] : obj.getArgs()));
                     CallResponse response = new CallResponse(method.invoke(o, obj.getArgs()));
-//                    System.out.println("Serialize: " + humanReadableByteCount(Functions.serialize.apply(response).get().length, true));
+//                    System.out.println("Serialize: " + humanReadableByteCount(Functions.serialize.apply(response).create().length, true));
                     Functions.serialize.apply(response).ifPresent(bytes -> ctx.channel().writeAndFlush(Functions.byteConverter.apply(bytes)));
                     ctx.channel().close();
                     return;

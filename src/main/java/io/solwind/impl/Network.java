@@ -16,26 +16,26 @@ import java.util.Set;
 /**
  * Created by solwind on 6/14/17.
  */
-public final class Cluster implements IInjector {
+public final class Network implements IInjector {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(Cluster.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(Network.class);
     public static final String PREPARE_TO_CREATE_PROXY_MESSAGE = "\nPrepare to create proxy for {}, {}";
 
-    private Cluster() {
+    private Network() {
     }
 
-    public static IExposer exposer(String exposerName, String host, DiscoveryConfig discoveryConfig, RmiConnectorServer rmiConnectorServer) throws IOException, InterruptedException {
+    public static ServiceRegistrar newServiceRegistrar(String exposerName, String host, DiscoveryConfig discoveryConfig, RmiConnectorServer rmiConnectorServer) throws IOException, InterruptedException {
         return new Exposer(exposerName, host, discoveryConfig, rmiConnectorServer);
     }
 
-    public static IExposer exposer(DiscoveryConfig discoveryConfig, RmiConnectorServer rmiConnectorServer) throws IOException, InterruptedException {
+    public static ServiceRegistrar newServiceRegistrar(DiscoveryConfig discoveryConfig, RmiConnectorServer rmiConnectorServer) throws IOException, InterruptedException {
         return new Exposer(discoveryConfig, rmiConnectorServer);
     }
 
-    public static IDiscovery discovery(final DiscoveryConfig discoveryConfig) {
+    public static ServiceRegistrarClient newServiceRegistrarClient(final DiscoveryConfig discoveryConfig) {
 
-        return new IDiscovery() {
-            public <T> T lookup(Class<T> service, String exposerName, RmiConnectorClient rmiConnectorClient) throws IOException, InterruptedException {
+        return new ServiceRegistrarClient() {
+            public <T> T create(Class<T> service, String exposerName, RmiConnectorClient rmiConnectorClient) throws IOException, InterruptedException {
                 discoveryConfig.init();
                 discoveryConfig.connect();
                 String concat = "/".concat(service.getCanonicalName());
@@ -45,12 +45,12 @@ public final class Cluster implements IInjector {
                 String host = znode.getHost().split(":")[0];
                 Integer port = Integer.valueOf(znode.getHost().split(":")[1]);
                 h.setRmiConnectorClient(rmiConnectorClient.newClient(host, port));
-                return (T) Proxy.newProxyInstance(IDiscovery.class.getClassLoader(),
+                return (T) Proxy.newProxyInstance(ServiceRegistrarClient.class.getClassLoader(),
                         new Class<?>[]{service}, h);
             }
 
             @Override
-            public <T> T lookup(Class<T> service, String exposerName, RmiConnectorClient rmiConnectorClient, String token) throws IOException, InterruptedException {
+            public <T> T create(Class<T> service, String exposerName, RmiConnectorClient rmiConnectorClient, String token) throws IOException, InterruptedException {
                 discoveryConfig.init();
                 discoveryConfig.connect();
                 String concat = "/".concat(service.getCanonicalName());
@@ -61,12 +61,12 @@ public final class Cluster implements IInjector {
                 Integer port = Integer.valueOf(znode.getHost().split(":")[1]);
                 h.setRmiConnectorClient(rmiConnectorClient.newClient(host, port));
                 h.setToken(token);
-                return (T) Proxy.newProxyInstance(IDiscovery.class.getClassLoader(),
+                return (T) Proxy.newProxyInstance(ServiceRegistrarClient.class.getClassLoader(),
                         new Class<?>[]{service}, h);
             }
 
             @Override
-            public <T> List<T> lookupAll(Class<T> service, RmiConnectorClient rmiConnectorClient) throws IOException, InterruptedException {
+            public <T> List<T> createForAll(Class<T> service, RmiConnectorClient rmiConnectorClient) throws IOException, InterruptedException {
                 String concat = "/".concat(service.getCanonicalName());
                 discoveryConfig.init();
                 discoveryConfig.connect();
@@ -78,7 +78,7 @@ public final class Cluster implements IInjector {
                     String host = holder.getHost().split(":")[0];
                     Integer port = Integer.valueOf(holder.getHost().split(":")[1]);
                     h.setRmiConnectorClient(rmiConnectorClient.newClient(host, port));
-                    ts.add((T) Proxy.newProxyInstance(IDiscovery.class.getClassLoader(),
+                    ts.add((T) Proxy.newProxyInstance(ServiceRegistrarClient.class.getClassLoader(),
                             new Class<?>[]{service}, h));
                 }
                 return ts;

@@ -24,6 +24,7 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
     private String host;
     private ZooKeeper zk;
     private ZooKeeperClient zooKeeperClient;
+    private static final String ROOT = "/io.solwnd.interfaces";
     private static final String SLASH = "/";
 
     public ZookeeperDiscoveryConnector(Properties properties) {
@@ -50,6 +51,13 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
 
     public void connect() throws IOException, InterruptedException {
         this.zk = this.zooKeeperClient.connect();
+        try {
+            if (ZookeeperDiscoveryConnector.this.zk.exists(ROOT, true) == null)
+            ZookeeperDiscoveryConnector.this.zk.create(ZookeeperDiscoveryConnector.ROOT, "".getBytes() ,ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    CreateMode.PERSISTENT);
+        } catch (Exception e) {
+            throw new DedicatedRuntimeException(e);
+        }
     }
 
     public void push(Class className, RegistrationServiceHolder data) throws KeeperException, InterruptedException {
@@ -58,7 +66,7 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
 
     public Set<RegistrationServiceHolder> retrieveAll(String path) {
         try {
-            byte[] data = ZookeeperDiscoveryConnector.this.zk.getData(path, true, null);
+            byte[] data = ZookeeperDiscoveryConnector.this.zk.getData(ROOT + path, true, null);
             Set<RegistrationServiceHolder> holders = new HashSet<>();
             Functions.<Set<RegistrationServiceHolder>>deserialize().apply(data).ifPresent(holders::addAll);
             return holders;
@@ -100,7 +108,7 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
         public void create(Class className, RegistrationServiceHolder data) throws
                 KeeperException, InterruptedException {
 
-            String path = SLASH + className.getCanonicalName();
+            String path = ROOT + SLASH + className.getCanonicalName();
             if (ZookeeperDiscoveryConnector.this.zk.exists(path, true) != null) {
                 byte[] s = ZookeeperDiscoveryConnector.this.zk.getData(path, true, null);
                 Functions.<Set<RegistrationServiceHolder>>deserialize().apply(s).ifPresent(holders -> {

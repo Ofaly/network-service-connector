@@ -56,5 +56,5 @@ After this point zookeeper will have the record about exposed service which look
 4. To consume service from an another instance of JVM need to have only <b>zookeeper.connection.host</b> into application properties file and consuming interface.
 
 ```java
-ITestService iTestService = Cluster.discovery(new ZookeeperDiscoveryConnector()).lookup(ITestService.class);
+ITestService iTestService = Cluster.discovery(new ZookeeperDiscoveryConnector()).create(ITestService.class);
 ```

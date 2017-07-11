@@ -1,7 +1,7 @@
 package io.solwind.impl;
 
 import io.solwind.api.DiscoveryConfig;
-import io.solwind.api.IExposer;
+import io.solwind.api.ServiceRegistrar;
 import io.solwind.api.RmiConnectorServer;
 import io.solwind.api.TokenSecurityHandler;
 import io.solwind.handler.RegistrationServiceHolder;
@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * Created by solwind on 6/14/17.
  */
-class Exposer implements IExposer {
+class Exposer implements ServiceRegistrar {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(Exposer.class);
 
@@ -48,8 +48,8 @@ class Exposer implements IExposer {
         this.rmiConnectorServer = rmiConnectorServer;
         discoveryConfig.init();
         discoveryConfig.connect();
-        this.host = discoveryConfig.props().getProperty("expose.host");
-        this.exposerName = discoveryConfig.props().getProperty("exposer.name");
+        this.host = discoveryConfig.props().getProperty("register.host");
+        this.exposerName = discoveryConfig.props().getProperty("newServiceRegistrar.name");
         this.discoveryConfig = discoveryConfig;
         String[] hostSplit = this.host.split(":");
         rmiConnectorServer.port(hostSplit.length > 1?new Integer(hostSplit[1]):80);
@@ -59,7 +59,7 @@ class Exposer implements IExposer {
     }
 
 
-    public <T> void expose(T testServiceClass, String version, String shortDescription) throws KeeperException, InterruptedException {
+    public <T> void register(T testServiceClass, String version, String shortDescription) throws KeeperException, InterruptedException {
         serviceTable.put(testServiceClass.getClass().getInterfaces()[0], testServiceClass);
         LOGGER.info("\nExpose for {}", testServiceClass);
         this.discoveryConfig.push(testServiceClass.getClass().getInterfaces()[0],
@@ -67,7 +67,7 @@ class Exposer implements IExposer {
     }
 
     @Override
-    public <T> void expose(T testServiceClass, String version, String shortDescription, TokenSecurityHandler tokenSecurityHandler) throws KeeperException, InterruptedException {
+    public <T> void register(T testServiceClass, String version, String shortDescription, TokenSecurityHandler tokenSecurityHandler) throws KeeperException, InterruptedException {
         serviceTable.put(testServiceClass.getClass().getInterfaces()[0], testServiceClass);
         handlerTable.put(testServiceClass.getClass().getInterfaces()[0], tokenSecurityHandler);
         LOGGER.info("\nExpose for {}", testServiceClass);
