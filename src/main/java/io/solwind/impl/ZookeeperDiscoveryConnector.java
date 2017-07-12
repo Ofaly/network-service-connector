@@ -5,6 +5,7 @@ import io.solwind.api.DiscoveryConfig;
 import io.solwind.exception.DedicatedRuntimeException;
 import io.solwind.handler.RegistrationServiceHolder;
 import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
 
 /**
  * Created by solwind on 6/14/17.
@@ -64,12 +66,28 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
         this.zooKeeperClient.create(className, data);
     }
 
-    public Set<RegistrationServiceHolder> retrieveAll(String path) {
+    public Set<RegistrationServiceHolder> retrieveAll(String path, Consumer<Set<RegistrationServiceHolder>> consumer) {
         try {
-            byte[] data = ZookeeperDiscoveryConnector.this.zk.getData(ROOT + path, true, null);
-            Set<RegistrationServiceHolder> holders = new HashSet<>();
-            Functions.<Set<RegistrationServiceHolder>>deserialize().apply(data).ifPresent(holders::addAll);
-            return holders;
+            byte[] data = ZookeeperDiscoveryConnector.this.zk.getData(ROOT + path, new Watcher() {
+                @Override
+                public void process(WatchedEvent watchedEvent) {
+                    try {
+                        if (watchedEvent.getType() != Event.EventType.NodeDeleted) {
+                            LOGGER.info("Node was changed: {}", watchedEvent);
+                            byte[] tmp = ZookeeperDiscoveryConnector.this.zk.getData(watchedEvent.getPath(), this, null);
+                            consumer.accept(getRegistrationServiceHoldersFromRawData(tmp));
+//                            ZookeeperDiscoveryConnector.this.zk.
+                        } else {
+                            LOGGER.info("Node was deleted: {}", watchedEvent);
+                        }
+                    } catch (KeeperException e) {
+                        LOGGER.info(e.getMessage(), e);
+                    } catch (InterruptedException e) {
+                        LOGGER.info(e.getMessage(), e);
+                    }
+                }
+            }, null);
+            return getRegistrationServiceHoldersFromRawData(data);
         } catch (KeeperException e) {
             LOGGER.info(e.getMessage(), e);
         } catch (InterruptedException e) {
@@ -77,6 +95,12 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
             Thread.currentThread().interrupt();
         }
         return Collections.emptySet();
+    }
+
+    private Set<RegistrationServiceHolder> getRegistrationServiceHoldersFromRawData(byte[] data) {
+        Set<RegistrationServiceHolder> holders = new HashSet<>();
+        Functions.<Set<RegistrationServiceHolder>>deserialize().apply(data).ifPresent(holders::addAll);
+        return holders;
     }
 
     public Properties props() {
@@ -113,7 +137,7 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
                 byte[] s = ZookeeperDiscoveryConnector.this.zk.getData(path, true, null);
                 List<RegistrationServiceHolder> tmp = new ArrayList<>();
                 Functions.<Set<RegistrationServiceHolder>>deserialize().apply(s).ifPresent(holders -> {
-                    try {
+//                    try {
                         holders.forEach(registrationServiceHolder -> {
                             if (registrationServiceHolder.getExposerName().equals(data.getExposerName())) {
                                 tmp.add(registrationServiceHolder);
@@ -125,11 +149,20 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
 
                         holders.add(data);
                         Optional<Byte[]> apply = Functions.serialize.apply(holders);
-                        ZookeeperDiscoveryConnector.this.zk.delete(path, 0);
-                        apply.ifPresent(bytes -> createNewNode(path, bytes));
-                    } catch (KeeperException | InterruptedException e) {
-                        throw new DedicatedRuntimeException(e);
-                    }
+                        apply.ifPresent(bytes -> {
+                            try {
+                                Stat exists = ZookeeperDiscoveryConnector.this.zk.exists(path, true);
+                                ZookeeperDiscoveryConnector.this.zk.setData(path, Functions.byteConverter.apply(bytes), exists.getVersion());
+                            } catch (KeeperException e) {
+                                e.printStackTrace();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        });
+//
+//                    } catch (KeeperException | InterruptedException e) {
+//                        throw new DedicatedRuntimeException(e);
+//                    }
                 });
             } else {
                 Set<RegistrationServiceHolder> list = new HashSet<>();

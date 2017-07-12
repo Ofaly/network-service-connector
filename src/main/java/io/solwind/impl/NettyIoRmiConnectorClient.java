@@ -60,7 +60,6 @@ public class NettyIoRmiConnectorClient implements RmiConnectorClient {
                         pipeline.addLast(clientChannelInboundHandlerAdapter);
                     }
                 });
-        channelFuture = bootstrap.connect(host, port).sync();
     }
 
     @Override
