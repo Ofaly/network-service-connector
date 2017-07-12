@@ -41,7 +41,7 @@ public final class Network implements IInjector {
                 discoveryConfig.connect();
                 String concat = "/".concat(service.getCanonicalName());
                 MethodInvocationHandler h = new MethodInvocationHandler();
-                RegistrationServiceHolder znode = Functions.searchRshByName.apply(discoveryConfig.retrieveAll(concat, h)).apply(exposerName);
+                RegistrationServiceHolder znode = Functions.searchRshByName.apply(discoveryConfig.retrieveAll(concat, h, exposerName)).apply(exposerName);
                 LOGGER.info(PREPARE_TO_CREATE_PROXY_MESSAGE, service, znode);
                 String host = znode.getHost().split(":")[0];
                 Integer port = Integer.valueOf(znode.getHost().split(":")[1]);
@@ -57,7 +57,7 @@ public final class Network implements IInjector {
                 discoveryConfig.connect();
                 String concat = "/".concat(service.getCanonicalName());
                 MethodInvocationHandler h = new MethodInvocationHandler();
-                RegistrationServiceHolder znode = Functions.searchRshByName.apply(discoveryConfig.retrieveAll(concat, h)).apply(exposerName);
+                RegistrationServiceHolder znode = Functions.searchRshByName.apply(discoveryConfig.retrieveAll(concat, h, exposerName)).apply(exposerName);
                 LOGGER.info(PREPARE_TO_CREATE_PROXY_MESSAGE, service, znode);
                 String host = znode.getHost().split(":")[0];
                 Integer port = Integer.valueOf(znode.getHost().split(":")[1]);
@@ -78,7 +78,7 @@ public final class Network implements IInjector {
                     public void accept(Set<RegistrationServiceHolder> registrationServiceHolders) {
 
                     }
-                });
+                }, null);
                 List<T> ts = new ArrayList<>();
                 for (RegistrationServiceHolder holder : holders) {
                     LOGGER.info(PREPARE_TO_CREATE_PROXY_MESSAGE, service, holder);

@@ -14,6 +14,9 @@ public class RegistrationServiceHolder implements Serializable {
     private String shortDescription;
     private String exposerName;
 
+    public RegistrationServiceHolder() {
+    }
+
     public RegistrationServiceHolder(String host, String version, String shortDescription, String exposerName) {
         this.host = host;
         this.version = version;
