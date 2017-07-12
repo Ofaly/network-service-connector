@@ -6,6 +6,9 @@ import java.io.Serializable;
  * Created by theso on 6/24/2017.
  */
 public class RegistrationServiceHolder implements Serializable {
+
+    private static final long serialVersionUID = 1999L;
+
     private String host;
     private String version;
     private String shortDescription;
@@ -32,6 +35,16 @@ public class RegistrationServiceHolder implements Serializable {
 
     public String getExposerName() {
         return exposerName;
+    }
+
+    @Override
+    public String toString() {
+        return "RegistrationServiceHolder{" +
+                "host='" + host + '\'' +
+                ", version='" + version + '\'' +
+                ", shortDescription='" + shortDescription + '\'' +
+                ", exposerName='" + exposerName + '\'' +
+                '}';
     }
 
     @Override

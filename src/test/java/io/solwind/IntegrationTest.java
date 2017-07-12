@@ -24,7 +24,7 @@ import java.util.function.Function;
  * Created by solwind on 6/14/17.
  */
 @RunWith(JUnit4.class)
-@Ignore
+//@Ignore
 public class IntegrationTest {
 
     private ServiceRegistrar exposer;
@@ -57,15 +57,15 @@ public class IntegrationTest {
         embeddedZookeeperServer();
 
         properties.setProperty("zookeeper.connection.host", "localhost:" + zkPort);
-        exposer = Network.newServiceRegistrar("testExposerName", "localhost:8090", new ZookeeperDiscoveryConnector(properties), new NettyIoRmiConnectorServer());
+//        exposer = Network.newServiceRegistrar("testExposerName", "localhost:8090", new ZookeeperDiscoveryConnector(properties), new NettyIoRmiConnectorServer());
         exposer1 = Network.newServiceRegistrar("testExposerName1", "localhost:8070", new ZookeeperDiscoveryConnector(properties), new NettyIoRmiConnectorServer());
         exposer3 = Network.newServiceRegistrar("testExposerName3", "localhost:8071", new ZookeeperDiscoveryConnector(properties), new NettyIoRmiConnectorServer());
         ITestService testServiceClass = new TestService();
         ITestService testServiceClass1 = new TestService1();
         ITestService3 testService3 = new TestService3();
         exposer1.register(testServiceClass1, "1", "Test description 2");
-        exposer.register(testServiceClass, "1", "Test description");
-        exposer.register(testService3, "1", "Test description");
+//        exposer.register(testServiceClass, "1", "Test description");
+//        exposer.register(testService3, "1", "Test description");
         exposer3.register(testService3, "1", "Test description", token -> token.equals("000000"));
     }
 
@@ -81,29 +81,29 @@ public class IntegrationTest {
         final ServiceRegistrarClient discovery = Network.newServiceRegistrarClient(new ZookeeperDiscoveryConnector(properties));
         testService = discovery.create(ITestService.class, "testExposerName", new NettyIoRmiConnectorClient());
 
-        String responseText = testService.echoText();
-        Assert.assertEquals("ok", responseText);
-
-        Integer responseInt = testService.echoInt();
-        Assert.assertEquals(new Integer(123), responseInt);
-
-        CustomDto responseCustom = testService.customDto();
-        CustomDto customDto = new CustomDto("testOk", 123456);
-
-        Assert.assertTrue(customDto.equals(responseCustom));
-        Assert.assertFalse(customDto == responseCustom);
-
-        String responseArgStr = testService.args("test request");
-        Assert.assertEquals("response for arg test request", responseArgStr);
-
-        List<CustomDto> list = testService.list();
-        Assert.assertNotNull(list);
-        Assert.assertTrue(list.size() == 10001);
-
-        for (int i = 0; i<=1000; i++) {
-            Integer integer = testService.echoInt();
-            Assert.assertNotNull(integer);
-        }
+//        String responseText = testService.echoText();
+//        Assert.assertEquals("ok", responseText);
+//
+//        Integer responseInt = testService.echoInt();
+//        Assert.assertEquals(new Integer(123), responseInt);
+//
+//        CustomDto responseCustom = testService.customDto();
+//        CustomDto customDto = new CustomDto("testOk", 123456);
+//
+//        Assert.assertTrue(customDto.equals(responseCustom));
+//        Assert.assertFalse(customDto == responseCustom);
+//
+//        String responseArgStr = testService.args("test request");
+//        Assert.assertEquals("response for arg test request", responseArgStr);
+//
+//        List<CustomDto> list = testService.list();
+//        Assert.assertNotNull(list);
+//        Assert.assertTrue(list.size() == 10001);
+//
+//        for (int i = 0; i<=1000; i++) {
+//            Integer integer = testService.echoInt();
+//            Assert.assertNotNull(integer);
+//        }
 
     }
 
@@ -152,7 +152,7 @@ public class IntegrationTest {
     @After
     public void destroy() throws InterruptedException {
 //        zooKeeperServer.stop();
-        exposer.stop();
+//        exposer.stop();
         exposer1.stop();
         exposer3.stop();
     }

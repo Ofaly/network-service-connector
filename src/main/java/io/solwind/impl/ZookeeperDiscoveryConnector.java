@@ -111,8 +111,18 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
             String path = ROOT + SLASH + className.getCanonicalName();
             if (ZookeeperDiscoveryConnector.this.zk.exists(path, true) != null) {
                 byte[] s = ZookeeperDiscoveryConnector.this.zk.getData(path, true, null);
+                List<RegistrationServiceHolder> tmp = new ArrayList<>();
                 Functions.<Set<RegistrationServiceHolder>>deserialize().apply(s).ifPresent(holders -> {
                     try {
+                        holders.forEach(registrationServiceHolder -> {
+                            if (registrationServiceHolder.getExposerName().equals(data.getExposerName())) {
+                                tmp.add(registrationServiceHolder);
+                                LOGGER.info("Removes {}", registrationServiceHolder);
+                            }
+                        });
+
+                        holders.removeAll(tmp);
+
                         holders.add(data);
                         Optional<Byte[]> apply = Functions.serialize.apply(holders);
                         ZookeeperDiscoveryConnector.this.zk.delete(path, 0);
