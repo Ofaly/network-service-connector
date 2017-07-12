@@ -4,7 +4,7 @@
 
     <groupId>io.solwind</groupId>
     <artifactId>network-service-connector</artifactId>
-    <version>0.0.6</version>
+    <version>0.0.7-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Network service connector</name>
@@ -12,7 +12,7 @@
     <scm>
         <connection>scm:git:https://github.com/thesolwind/network-service-connector</connection>
         <developerConnection>scm:git:https://github.com/thesolwind/network-service-connector</developerConnection>
-        <tag>network-service-connector-0.0.6</tag>
+        <tag>HEAD</tag>
         <url>https://github.com/thesolwind/network-service-connector</url>
     </scm>
 
