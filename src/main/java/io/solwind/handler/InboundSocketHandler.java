@@ -11,9 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -45,8 +43,12 @@ public class InboundSocketHandler extends ChannelInboundHandlerAdapter {
                     final Method method = o.getClass().getMethod(obj.getMethodName(),
                             convertObjectsToTypes(obj.getArgs() == null ? new Object[0] : obj.getArgs()));
                     CallResponse response = new CallResponse(method.invoke(o, obj.getArgs()));
-//                    System.out.println("Serialize: " + humanReadableByteCount(Functions.serialize.apply(response).create().length, true));
-                    Functions.serialize.apply(response).ifPresent(bytes -> ctx.channel().writeAndFlush(Functions.byteConverter.apply(bytes)));
+                    Functions.serialize.apply(response).ifPresent(bytes ->
+                    {
+                        String size = Functions.humanReadableByteCount.apply(bytes.length);
+                        LOGGER.info("Size of request: {}", size);
+                        ctx.channel().writeAndFlush(Functions.byteConverter.apply(bytes));
+                    });
                     ctx.channel().close();
                     return;
                 }
@@ -59,14 +61,6 @@ public class InboundSocketHandler extends ChannelInboundHandlerAdapter {
             }
         });
     }
-
-//    public static String humanReadableByteCount(long bytes, boolean si) {
-//        int unit = si ? 1000 : 1024;
-//        if (bytes < unit) return bytes + " B";
-//        int exp = (int) (Math.log(bytes) / Math.log(unit));
-//        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
-//        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
-//    }
 
     private Class[] convertObjectsToTypes(Object[] objects) {
         return Arrays.stream(objects).map(Object::getClass).collect(Collectors.toList()).toArray(new Class[]{});

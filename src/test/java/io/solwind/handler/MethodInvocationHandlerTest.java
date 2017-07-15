@@ -10,6 +10,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
+
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
@@ -52,6 +56,36 @@ public class MethodInvocationHandlerTest {
         Mockito.verify(rmiConnectorClient).writeAndFlush(Matchers.any());
         Mockito.verify(rmiConnectorClient).lastResponse();
         Mockito.verify(rmiConnectorClient).waitForResponse();
+    }
+
+    @Test
+    public void acceptChangeHostAndPortTest() {
+        Set<RegistrationServiceHolder> set = new HashSet<>();
+        set.add(new RegistrationServiceHolder("host:88", "1", "description", "testName"));
+        set.add(new RegistrationServiceHolder("host:89", "1", "description", "testName1"));
+        set.add(new RegistrationServiceHolder("host:90", "1", "description", "testName2"));
+
+        methodInvocationHandler.setExposerName("testName");
+        methodInvocationHandler.setRmiConnectorClient(rmiConnectorClient);
+        ((Consumer)methodInvocationHandler).accept(set);
+
+        Mockito.verify(rmiConnectorClient).setPort(88);
+        Mockito.verify(rmiConnectorClient).setHost("host");
+    }
+
+    @Test
+    public void acceptChangeWrongHostAndPortTest() {
+        Set<RegistrationServiceHolder> set = new HashSet<>();
+        set.add(new RegistrationServiceHolder("host:88", "1", "description", "testName"));
+        set.add(new RegistrationServiceHolder("host:89", "1", "description", "testName1"));
+        set.add(new RegistrationServiceHolder("host:90", "1", "description", "testName2"));
+
+        methodInvocationHandler.setExposerName("testName4");
+        methodInvocationHandler.setRmiConnectorClient(rmiConnectorClient);
+        ((Consumer)methodInvocationHandler).accept(set);
+
+        Mockito.verifyZeroInteractions(rmiConnectorClient);
+        Mockito.verifyZeroInteractions(rmiConnectorClient);
     }
 
 }

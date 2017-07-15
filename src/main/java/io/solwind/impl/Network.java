@@ -12,7 +12,6 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * Created by solwind on 6/14/17.
@@ -73,11 +72,9 @@ public final class Network implements IInjector {
                 String concat = "/".concat(service.getCanonicalName());
                 discoveryConfig.init();
                 discoveryConfig.connect();
-                Set<RegistrationServiceHolder> holders = discoveryConfig.retrieveAll(concat, new Consumer<Set<RegistrationServiceHolder>>() {
-                    @Override
-                    public void accept(Set<RegistrationServiceHolder> registrationServiceHolders) {
-
-                    }
+                Set<RegistrationServiceHolder> holders = discoveryConfig.retrieveAll(concat, registrationServiceHolders -> {
+                    // it is not done yet
+                    //TODO:finish it
                 }, null);
                 List<T> ts = new ArrayList<>();
                 for (RegistrationServiceHolder holder : holders) {
