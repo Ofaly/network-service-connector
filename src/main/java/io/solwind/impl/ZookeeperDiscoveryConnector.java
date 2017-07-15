@@ -55,8 +55,8 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
         this.zk = this.zooKeeperClient.connect();
         try {
             if (ZookeeperDiscoveryConnector.this.zk.exists(ROOT, true) == null)
-            ZookeeperDiscoveryConnector.this.zk.create(ZookeeperDiscoveryConnector.ROOT, "".getBytes() ,ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                    CreateMode.PERSISTENT);
+                ZookeeperDiscoveryConnector.this.zk.create(ZookeeperDiscoveryConnector.ROOT, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                        CreateMode.PERSISTENT);
         } catch (Exception e) {
             throw new DedicatedRuntimeException(e);
         }
@@ -72,9 +72,7 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
             if (exists == null && exposerNameIfNewNeeded != null) {
                 Set<RegistrationServiceHolder> set = new HashSet<>();
                 set.add(new RegistrationServiceHolder("emptyhost:0", null, null, exposerNameIfNewNeeded));
-                Functions.serialize.apply(set).ifPresent(bytes -> {
-                    ZookeeperDiscoveryConnector.this.zooKeeperClient.createNewNode(ROOT + path, bytes);
-                });
+                Functions.serialize.apply(set).ifPresent(bytes -> ZookeeperDiscoveryConnector.this.zooKeeperClient.createNewNode(ROOT + path, bytes));
             }
             byte[] data = ZookeeperDiscoveryConnector.this.zk.getData(ROOT + path, new Watcher() {
                 @Override
@@ -84,7 +82,6 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
                             LOGGER.info("Node was changed: {}", watchedEvent);
                             byte[] tmp = ZookeeperDiscoveryConnector.this.zk.getData(watchedEvent.getPath(), this, null);
                             consumer.accept(getRegistrationServiceHoldersFromRawData(tmp));
-//                            ZookeeperDiscoveryConnector.this.zk.
                         } else {
                             LOGGER.info("Node was deleted: {}", watchedEvent);
                         }
@@ -92,6 +89,7 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
                         LOGGER.info(e.getMessage(), e);
                     } catch (InterruptedException e) {
                         LOGGER.info(e.getMessage(), e);
+                        Thread.currentThread().interrupt();
                     }
                 }
             }, null);
@@ -145,32 +143,28 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
                 byte[] s = ZookeeperDiscoveryConnector.this.zk.getData(path, true, null);
                 List<RegistrationServiceHolder> tmp = new ArrayList<>();
                 Functions.<Set<RegistrationServiceHolder>>deserialize().apply(s).ifPresent(holders -> {
-//                    try {
-                        holders.forEach(registrationServiceHolder -> {
-                            if (registrationServiceHolder.getExposerName().equals(data.getExposerName())) {
-                                tmp.add(registrationServiceHolder);
-                                LOGGER.info("Removes {}", registrationServiceHolder);
-                            }
-                        });
+                    holders.forEach(registrationServiceHolder -> {
+                        if (registrationServiceHolder.getExposerName().equals(data.getExposerName())) {
+                            tmp.add(registrationServiceHolder);
+                            LOGGER.info("Removes {}", registrationServiceHolder);
+                        }
+                    });
 
-                        holders.removeAll(tmp);
+                    holders.removeAll(tmp);
 
-                        holders.add(data);
-                        Optional<Byte[]> apply = Functions.serialize.apply(holders);
-                        apply.ifPresent(bytes -> {
-                            try {
-                                Stat exists = ZookeeperDiscoveryConnector.this.zk.exists(path, true);
-                                ZookeeperDiscoveryConnector.this.zk.setData(path, Functions.byteConverter.apply(bytes), exists.getVersion());
-                            } catch (KeeperException e) {
-                                e.printStackTrace();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        });
-//
-//                    } catch (KeeperException | InterruptedException e) {
-//                        throw new DedicatedRuntimeException(e);
-//                    }
+                    holders.add(data);
+                    Optional<Byte[]> apply = Functions.serialize.apply(holders);
+                    apply.ifPresent(bytes -> {
+                        try {
+                            Stat exists = ZookeeperDiscoveryConnector.this.zk.exists(path, true);
+                            ZookeeperDiscoveryConnector.this.zk.setData(path, Functions.byteConverter.apply(bytes), exists.getVersion());
+                        } catch (KeeperException e) {
+                            LOGGER.info(e.getMessage(), e);
+                        } catch (InterruptedException e) {
+                            LOGGER.info(e.getMessage(), e);
+                            Thread.currentThread().interrupt();
+                        }
+                    });
                 });
             } else {
                 Set<RegistrationServiceHolder> list = new HashSet<>();

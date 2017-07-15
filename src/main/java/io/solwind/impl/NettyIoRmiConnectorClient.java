@@ -28,7 +28,7 @@ public class NettyIoRmiConnectorClient implements RmiConnectorClient {
 
     private ClientChannelInboundHandlerAdapter clientChannelInboundHandlerAdapter;
 
-    public NettyIoRmiConnectorClient(String host, Integer port) throws InterruptedException {
+    public NettyIoRmiConnectorClient(String host, Integer port) {
         this.host = host;
         this.port = port;
         connect();
@@ -47,7 +47,7 @@ public class NettyIoRmiConnectorClient implements RmiConnectorClient {
         this.port = port;
     }
 
-    private void connect() throws InterruptedException {
+    private void connect() {
         clientChannelInboundHandlerAdapter = new ClientChannelInboundHandlerAdapter();
         bootstrap = new Bootstrap().group(new NioEventLoopGroup()).channel(NioSocketChannel.class)
                 .option(ChannelOption.SO_KEEPALIVE, true)
