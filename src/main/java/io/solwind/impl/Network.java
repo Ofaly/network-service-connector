@@ -72,16 +72,14 @@ public final class Network implements IInjector {
                 String concat = "/".concat(service.getCanonicalName());
                 discoveryConfig.init();
                 discoveryConfig.connect();
-                Set<RegistrationServiceHolder> holders = discoveryConfig.retrieveAll(concat, registrationServiceHolders -> {
-                    // it is not done yet
-                    //TODO:finish it
-                }, null);
+                Set<RegistrationServiceHolder> holders = discoveryConfig.retrieveAll(concat, null);
                 List<T> ts = new ArrayList<>();
                 for (RegistrationServiceHolder holder : holders) {
                     LOGGER.info(PREPARE_TO_CREATE_PROXY_MESSAGE, service, holder);
                     MethodInvocationHandler h = new MethodInvocationHandler();
-                    String host = holder.getHost().split(":")[0];
-                    Integer port = Integer.valueOf(holder.getHost().split(":")[1]);
+                    RegistrationServiceHolder znode = Functions.searchRshByName.apply(discoveryConfig.retrieveAll(concat, h, holder.getExposerName())).apply(holder.getExposerName());
+                    String host = znode.getHost().split(":")[0];
+                    Integer port = Integer.valueOf(znode.getHost().split(":")[1]);
                     h.setRmiConnectorClient(rmiConnectorClient.newClient(host, port));
                     ts.add((T) Proxy.newProxyInstance(ServiceRegistrarClient.class.getClassLoader(),
                             new Class<?>[]{service}, h));

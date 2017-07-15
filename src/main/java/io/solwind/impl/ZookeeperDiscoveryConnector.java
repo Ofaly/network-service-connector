@@ -103,6 +103,26 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
         return Collections.emptySet();
     }
 
+    @Override
+    public Set<RegistrationServiceHolder> retrieveAll(String path, String exposerNameIfNewNeeded) {
+        try {
+            Stat exists = ZookeeperDiscoveryConnector.this.zk.exists(ROOT + path, true);
+            if (exists == null && exposerNameIfNewNeeded != null) {
+                Set<RegistrationServiceHolder> set = new HashSet<>();
+                set.add(new RegistrationServiceHolder("emptyhost:0", null, null, exposerNameIfNewNeeded));
+                Functions.serialize.apply(set).ifPresent(bytes -> ZookeeperDiscoveryConnector.this.zooKeeperClient.createNewNode(ROOT + path, bytes));
+            }
+            byte[] data = ZookeeperDiscoveryConnector.this.zk.getData(ROOT + path, true, null);
+            return getRegistrationServiceHoldersFromRawData(data);
+        } catch (KeeperException e) {
+            LOGGER.info(e.getMessage(), e);
+        } catch (InterruptedException e) {
+            LOGGER.info(e.getMessage(), e);
+            Thread.currentThread().interrupt();
+        }
+        return Collections.emptySet();
+    }
+
     private Set<RegistrationServiceHolder> getRegistrationServiceHoldersFromRawData(byte[] data) {
         Set<RegistrationServiceHolder> holders = new HashSet<>();
         Functions.<Set<RegistrationServiceHolder>>deserialize().apply(data).ifPresent(holders::addAll);
