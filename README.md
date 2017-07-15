@@ -13,6 +13,19 @@ This library allows to easy connect between different services which ran on diff
 </dependency>
 ```
 
+#### Snapshot
+```xml
+<repository>
+    <id>sonatype</id>
+    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+</repository>
+<dependency>
+    <groupId>io.solwind</groupId>
+    <artifactId>network-service-connector</artifactId>
+    <version>0.0.8-SNAPSHOT</version>
+</dependency>>
+```
+
 The application.properties file needs to be created in classpath. 
 It should contain address to the zookeeper server.
 
