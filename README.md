@@ -24,7 +24,7 @@ zookeeper.connection.host - connection string to zookeeper server.<br/>
 zookeeper.connection.host=127.0.0.1:2181
 ```
 
-2. To expose a service create interface and class. All custom objects must be serializable.
+2. Create interface and class. All custom objects must be serializable.
 ```java
 public interface ITestService {
     String text();
@@ -60,7 +60,8 @@ registrar.register(new TestService(), "version1", "short service description");
 ```
 so now zookeeper has record about ITestService, it includes interface name, host address and port.
 
-5. Create registrar client.<br/>
+5. Create registrar client.
+
 Client application has to have the same properties file with zookeeper host.
 ```java
 ServiceRegistrarClient clientRegistrar = Network.newServiceRegistrarClient(new ZookeeperDiscoveryConnector());
