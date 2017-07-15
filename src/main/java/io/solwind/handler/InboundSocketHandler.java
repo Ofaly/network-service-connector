@@ -45,7 +45,8 @@ public class InboundSocketHandler extends ChannelInboundHandlerAdapter {
                     CallResponse response = new CallResponse(method.invoke(o, obj.getArgs()));
                     Functions.serialize.apply(response).ifPresent(bytes ->
                     {
-                        LOGGER.info("Size of request: {}" + Functions.humanReadableByteCount.apply(bytes.length));
+                        String size = Functions.humanReadableByteCount.apply(bytes.length);
+                        LOGGER.info("Size of request: {}", size);
                         ctx.channel().writeAndFlush(Functions.byteConverter.apply(bytes));
                     });
                     ctx.channel().close();

@@ -67,4 +67,9 @@ public class FunctionsTest {
     }
 
 
+    @Test
+    public void humanReadableByteCountTest() {
+        assertEquals("1.0 MiB", Functions.humanReadableByteCount.apply(1048576));
+    }
+
 }
