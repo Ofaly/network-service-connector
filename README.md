@@ -2,27 +2,26 @@
 [![codecov](https://codecov.io/gh/thesolwind/network-service-connector/branch/master/graph/badge.svg)](https://codecov.io/gh/thesolwind/network-service-connector)
 # Network service connector.[DRAFT]
 
-This library allows you to easy create communication between different services which run on different hosts. It uses the Apache zookeeper to find location of services, the netty io to connnect beatween services and java serialization to serialize queries beatween services.
+This library allows to easy connect between different services which ran on different hosts. It uses the Apache zookeeper to find location of services, the netty io to connnect beatween services and java serialization to serialize queries beatween services.
 
 #### Maven central
 ```xml
 <dependency>
     <groupId>io.solwind</groupId>
     <artifactId>network-service-connector</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.7</version>
 </dependency>
 ```
 
-The application.properties file needs to be created in classpath. It should contain address to the zookeeper server and port which will be used to call  services.
+The application.properties file needs to be created in classpath. 
+It should contain address to the zookeeper server.
 
 zookeeper.connection.host - connection string to zookeeper server.<br/>
-expose.host - host to expose service.
 
 ### Example
 1. Create application.properties with the following content
 ```properties
-zookeeper.connection.host=127.0.0.1:2888
-expose.host=127.0.0.1:8090
+zookeeper.connection.host=127.0.0.1:2181
 ```
 
 2. To expose a service create interface and class. All custom objects must be serializable.
@@ -44,17 +43,31 @@ public class TestService implements ITestService {
 }
 ```
 
-3. Expose service. It's gonna be listen 8090 port of your host to consume inbound calls.
+3. Cretae service registrar
 ```java
-IExposer exposer = Cluster.exposer(new ZookeeperDiscoveryConnector());
-exposer.expose(new TestService(), "Some version", "Some description");
+ServiceRegistrar registrar = Network.newServiceRegistrar("service-name", "host:port", new ZookeeperDiscoveryConnector(), new NettyIoRmiConnectorServer());
 ```
-After this point zookeeper will have the record about exposed service which looks like: path = /[your.package].ITestService, data = 
-<code>{'host':'127.0.0.1:8090', 'version':'Some version', 'description':'Some description'}</code>
-
-
-4. To consume service from an another instance of JVM need to have only <b>zookeeper.connection.host</b> into application properties file and consuming interface.
-
+`service-name` is name of your service<br/>
+`host:port` is host and port of your service for example you can use
 ```java
-ITestService iTestService = Cluster.discovery(new ZookeeperDiscoveryConnector()).create(ITestService.class);
+ InetAddress.getLocalHost().getHostAddress()
 ```
+to know your host address in network.
+
+4. Register service.
+```java
+registrar.register(new TestService(), "version1", "short service description");
+```
+so now zookeeper has record about ITestService, it includes interface name, host address and port.
+
+5. Create registrar client.<br/>
+Client application has to have the same properties file with zookeeper host.
+```java
+ServiceRegistrarClient clientRegistrar = Network.newServiceRegistrarClient(new ZookeeperDiscoveryConnector());
+```
+
+6. Create service.
+```java
+ITestService testService = clientRegistrar.create(ITestService.class, "service-name", new NettyIoRmiConnectorClient());
+```
+`service-name` must be the same like in service registrar otherwise client is not gonna find service.
