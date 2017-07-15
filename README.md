@@ -108,4 +108,10 @@ To connect to secured service
 ITestService testService = clientRegistrar.create(ITestService.class, "service-name", new NettyIoRmiConnectorClient(), "sometoken");
 ```
 `service-name` must be the same like in service registrar otherwise client is not gonna find service.
-In case of service endpoint has changed host address all clients will be notified about that and will be configured automatically. 
+In case of service endpoint has changed host address all clients will be notified about that and will be configured automatically.
+
+If several service hosts publish the same interface it's possible to collect list of interfaces
+for example:
+```java
+List<ITestService> services = clientRegistrar.createForAll(ITestService.class, new NettyIoRmiConnectorClient());
+```
