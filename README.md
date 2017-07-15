@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/thesolwind/network-service-connector/branch/master/graph/badge.svg)](https://codecov.io/gh/thesolwind/network-service-connector)
 # Network service connector
 
-This library allows to easy connect between different services which ran on different hosts. It uses the Apache zookeeper to find location of services, the netty io to connnect beatween services and java serialization to serialize queries beatween services.
+This library allows to easy connect between different services which ran on different hosts. It uses the Apache zookeeper to find location of services, the netty io to connnect beatween services and java serialization to serialize queries between services.
 
 #### Maven central
 ```xml
