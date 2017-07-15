@@ -67,14 +67,21 @@ public class NetworkTest {
     }
 
     @Test
-    @Ignore
     public void lookUpList() throws IOException, InterruptedException {
 
         Set<RegistrationServiceHolder> holders = new HashSet<>();
-        holders.add(new RegistrationServiceHolder("host:8080", "0", "some desc 1", "exposerOne"));
-        holders.add(new RegistrationServiceHolder("host1:8081", "0", "some desc 2", "exposerTwo"));
+        RegistrationServiceHolder exposerOne = new RegistrationServiceHolder("host:8080", "0", "some desc 1", "exposerOne");
+        holders.add(exposerOne);
+        RegistrationServiceHolder exposerTwo = new RegistrationServiceHolder("host1:8081", "0", "some desc 2", "exposerTwo");
+        holders.add(exposerTwo);
 
         Mockito.when(discoveryConfig.retrieveAll(Matchers.eq("/" + ITestService.class.getCanonicalName()), Matchers.any(), Matchers.anyString()))
+                .thenReturn(holders);
+
+        Mockito.when(discoveryConfig.retrieveAll("/" + ITestService.class.getCanonicalName(), null))
+                .thenReturn(holders);
+
+        Mockito.when(discoveryConfig.retrieveAll("/" + ITestService.class.getCanonicalName(), null))
                 .thenReturn(holders);
 
         List<ITestService> services = Network.newServiceRegistrarClient(discoveryConfig).createForAll(ITestService.class, rmiConnectorClient);

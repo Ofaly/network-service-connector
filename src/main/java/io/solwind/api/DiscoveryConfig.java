@@ -16,5 +16,6 @@ public interface DiscoveryConfig {
     void connect() throws IOException, InterruptedException;
     void push(Class className, RegistrationServiceHolder data) throws KeeperException, InterruptedException;
     Set<RegistrationServiceHolder> retrieveAll(String path, Consumer<Set<RegistrationServiceHolder>> consumer, String exposerNameIfNewNeeded);
+    Set<RegistrationServiceHolder> retrieveAll(String path, String exposerNameIfNewNeeded);
     Properties props();
 }
