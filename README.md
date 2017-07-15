@@ -9,7 +9,7 @@ This library allows to easy connect between different services which ran on diff
 <dependency>
     <groupId>io.solwind</groupId>
     <artifactId>network-service-connector</artifactId>
-    <version>0.0.7</version>
+    <version>0.0.8</version>
 </dependency>
 ```
 
@@ -22,7 +22,7 @@ This library allows to easy connect between different services which ran on diff
 <dependency>
     <groupId>io.solwind</groupId>
     <artifactId>network-service-connector</artifactId>
-    <version>0.0.8-SNAPSHOT</version>
+    <version>0.0.9-SNAPSHOT</version>
 </dependency>>
 ```
 
