@@ -19,12 +19,14 @@ It should contain address to the zookeeper server.
 zookeeper.connection.host - connection string to zookeeper server.<br/>
 
 ### Example
-1. Create application.properties with the following content
+#### 1. Create application.properties with the following content
 ```properties
 zookeeper.connection.host=127.0.0.1:2181
 ```
 
-2. Create interface and class. All custom objects must be serializable.
+#### 2. Create interface and class. 
+
+All custom objects must be serializable.
 ```java
 public interface ITestService {
     String text();
@@ -43,7 +45,7 @@ public class TestService implements ITestService {
 }
 ```
 
-3. Cretae service registrar
+#### 3. Cretae service registrar
 ```java
 ServiceRegistrar registrar = Network.newServiceRegistrar("service-name", "host:port", new ZookeeperDiscoveryConnector(), new NettyIoRmiConnectorServer());
 ```
@@ -52,23 +54,44 @@ ServiceRegistrar registrar = Network.newServiceRegistrar("service-name", "host:p
 ```java
  InetAddress.getLocalHost().getHostAddress()
 ```
-to know your host address in network.
+to know your host address in network. To find free port
+```java
+private int freePort() {
+        try {
+            int port = 0;
+            ServerSocket serverSocket = new ServerSocket(0);
+            port = serverSocket.getLocalPort();
+            serverSocket.close();
+            return port;
+        } catch (IOException e) {
+            return 0;
+        }
+    }
+```
 
-4. Register service.
+#### 4. Register service.
 ```java
 registrar.register(new TestService(), "version1", "short service description");
 ```
+To secure service just add token security handler
+```java
+registrar.register(new TestService(), "version1", "short service description", token -> token.equals("sometoken"));
+```
 so now zookeeper has record about ITestService, it includes interface name, host address and port.
 
-5. Create registrar client.
+#### 5. Create registrar client.
 
 Client application has to have the same properties file with zookeeper host.
 ```java
 ServiceRegistrarClient clientRegistrar = Network.newServiceRegistrarClient(new ZookeeperDiscoveryConnector());
 ```
 
-6. Create service.
+#### 6. Create service.
 ```java
 ITestService testService = clientRegistrar.create(ITestService.class, "service-name", new NettyIoRmiConnectorClient());
+```
+To connect to secured service
+```java
+ITestService testService = clientRegistrar.create(ITestService.class, "service-name", new NettyIoRmiConnectorClient(), "sometoken");
 ```
 `service-name` must be the same like in service registrar otherwise client is not gonna find service.
