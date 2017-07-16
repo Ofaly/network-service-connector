@@ -39,4 +39,14 @@ public class TestService implements ITestService {
     public String stringWithTimeout() throws InterruptedException {
         return "test";
     }
+
+    @Override
+    public String listParams(String str, Integer i, List list) {
+        return String.format("%s %s %s", str, i, list);
+    }
+
+    @Override
+    public String noSerializeDtoArgument(NoSerializableCustomDto noSerializableCustomDto) {
+        return "empty";
+    }
 }

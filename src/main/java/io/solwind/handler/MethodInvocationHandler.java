@@ -34,7 +34,7 @@ public class MethodInvocationHandler implements InvocationHandler, Consumer<Set<
     }
 
     public synchronized Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        serialize.apply(new CallRequest(method.getName(), method.getDeclaringClass().getCanonicalName(), args, token))
+        serialize.apply(new CallRequest(method.getName(), method.getDeclaringClass().getCanonicalName(), args, method.getParameterTypes(), token))
                 .ifPresent(bytes -> rmiConnectorClient.writeAndFlush(byteConverter.apply(bytes)));
         rmiConnectorClient.waitForResponse();
         CallResponse response = rmiConnectorClient.lastResponse();
