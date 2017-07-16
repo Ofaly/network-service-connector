@@ -12,4 +12,6 @@ public interface ITestService {
     String args(String test);
     List<CustomDto> list();
     String stringWithTimeout() throws InterruptedException;
+    String listParams(String str, Integer i, List list);
+    String noSerializeDtoArgument(NoSerializableCustomDto noSerializableCustomDto);
 }

@@ -41,7 +41,7 @@ public class InboundSocketHandler extends ChannelInboundHandlerAdapter {
                 if (serviceTable.containsKey(clazz)) {
                     final Object o = serviceTable.get(clazz);
                     final Method method = o.getClass().getMethod(obj.getMethodName(),
-                            convertObjectsToTypes(obj.getArgs() == null ? new Object[0] : obj.getArgs()));
+                            obj.getArgsType());
                     CallResponse response = new CallResponse(method.invoke(o, obj.getArgs()));
                     Functions.serialize.apply(response).ifPresent(bytes ->
                     {
@@ -60,10 +60,6 @@ public class InboundSocketHandler extends ChannelInboundHandlerAdapter {
                 ctx.channel().close();
             }
         });
-    }
-
-    private Class[] convertObjectsToTypes(Object[] objects) {
-        return Arrays.stream(objects).map(Object::getClass).collect(Collectors.toList()).toArray(new Class[]{});
     }
 
     @Override

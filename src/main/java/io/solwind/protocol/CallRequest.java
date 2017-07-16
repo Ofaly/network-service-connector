@@ -16,38 +16,46 @@ public class CallRequest implements Serializable {
     private String methodName;
     private String clazz;
     private Object[] args;
+    private Class[] argsType;
     private String token;
 
-    public CallRequest(String methodName, String clazz, Object[] args, String token) {
+    public CallRequest(String methodName, String clazz, Object[] args, Class[] argsType, String token) {
         this.methodName = methodName;
         this.clazz = clazz;
         this.args = args;
+        this.argsType = argsType;
         this.token = token;
     }
 
-    public CallRequest(String methodName, String clazz, Object[] args) {
+    public CallRequest(String methodName, String clazz, Object[] args, Class[] argsType) {
         this.methodName = methodName;
         this.clazz = clazz;
         this.args = args;
+        this.argsType = argsType;
     }
 
     private void writeObject(java.io.ObjectOutputStream out)
             throws IOException {
 
+        checkINputParameters();
+
+        out.writeObject(methodName);
+        out.writeObject(clazz);
+        out.writeObject(args);
+        out.writeObject(token);
+        out.writeObject(argsType);
+    }
+
+    private void checkINputParameters() throws NotSerializableException {
         if (Objects.nonNull(args)) {
             for (Object o : args) {
-                if (!(o instanceof Serializable)) {
+                if (o != null && !(o instanceof Serializable)) {
                     NotSerializableException notSerializableException = new NotSerializableException(String.format("%s", o.getClass()));
                     LOGGER.info("{}", notSerializableException);
                     throw notSerializableException;
                 }
             }
         }
-
-        out.writeObject(methodName);
-        out.writeObject(clazz);
-        out.writeObject(args);
-        out.writeObject(token);
     }
 
     private void readObject(java.io.ObjectInputStream stream)
@@ -56,6 +64,7 @@ public class CallRequest implements Serializable {
         clazz = (String) stream.readObject();
         args = (Object[]) stream.readObject();
         token = (String) stream.readObject();
+        argsType = (Class[])stream.readObject();
     }
 
     public String getMethodName() {
@@ -72,5 +81,9 @@ public class CallRequest implements Serializable {
 
     public String getToken() {
         return token;
+    }
+
+    public Class[] getArgsType() {
+        return argsType;
     }
 }

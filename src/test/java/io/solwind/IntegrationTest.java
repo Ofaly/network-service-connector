@@ -105,18 +105,21 @@ public class IntegrationTest {
             Assert.assertNotNull(integer);
         }
 
+        String s = testService.listParams("test1", new Integer(1), null);
+        Assert.assertEquals("test1 1 null", s);
+
     }
 
-//    @Test
-//    public void passNullValueParameters() throws IOException, InterruptedException {
-//        final ServiceRegistrarClient discovery = Network.newServiceRegistrarClient(new ZookeeperDiscoveryConnector(properties));
-//        testService = discovery.create(ITestService.class, "testExposerName", new NettyIoRmiConnectorClient());
-//
-//        String args = testService.args(null);
-//
-//        Assert.assertEquals("response for arg null", args);
-//
-//    }
+    @Test
+    public void passNullValueParameters() throws IOException, InterruptedException {
+        final ServiceRegistrarClient discovery = Network.newServiceRegistrarClient(new ZookeeperDiscoveryConnector(properties));
+        testService = discovery.create(ITestService.class, "testExposerName", new NettyIoRmiConnectorClient());
+
+        String args = testService.args(null);
+
+        Assert.assertEquals("response for arg null", args);
+
+    }
 
 
     @Test
