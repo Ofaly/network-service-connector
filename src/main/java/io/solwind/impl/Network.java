@@ -2,6 +2,7 @@ package io.solwind.impl;
 
 import io.solwind.Functions;
 import io.solwind.api.*;
+import io.solwind.exception.DedicatedRuntimeException;
 import io.solwind.handler.MethodInvocationHandler;
 import io.solwind.handler.RegistrationServiceHolder;
 import org.slf4j.Logger;
@@ -25,11 +26,16 @@ public final class Network implements IInjector {
     }
 
     public static ServiceRegistrar newServiceRegistrar(String exposerName, String host, DiscoveryConfig discoveryConfig, RmiConnectorServer rmiConnectorServer) throws IOException, InterruptedException {
+        checkInputParametersToCreateServiceRegistrar(exposerName, host, discoveryConfig, rmiConnectorServer);
         return new Exposer(exposerName, host, discoveryConfig, rmiConnectorServer);
     }
 
-    public static ServiceRegistrar newServiceRegistrar(DiscoveryConfig discoveryConfig, RmiConnectorServer rmiConnectorServer) throws IOException, InterruptedException {
-        return new Exposer(discoveryConfig, rmiConnectorServer);
+    private static void checkInputParametersToCreateServiceRegistrar(String exposerName, String host, DiscoveryConfig discoveryConfig, RmiConnectorServer rmiConnectorServer) {
+        if (discoveryConfig == null || rmiConnectorServer == null || !discoveryConfig.check()
+                || exposerName == null || exposerName.isEmpty() || host == null || host.isEmpty()) {
+            throw new DedicatedRuntimeException(String.format("Input params are wrong!!!!\nCurrent settings: discoveryConfig - %s, rmiConnectorServer - %s" +
+                    " discoveryConfig check result - %s, exposerName - %s, host - %s", discoveryConfig, rmiConnectorServer, discoveryConfig != null?discoveryConfig.check():false, exposerName, host));
+        }
     }
 
     public static ServiceRegistrarClient newServiceRegistrarClient(final DiscoveryConfig discoveryConfig) {

@@ -18,4 +18,5 @@ public interface DiscoveryConfig {
     Set<RegistrationServiceHolder> retrieveAll(String path, Consumer<Set<RegistrationServiceHolder>> consumer, String exposerNameIfNewNeeded);
     Set<RegistrationServiceHolder> retrieveAll(String path, String exposerNameIfNewNeeded);
     Properties props();
+    boolean check();
 }

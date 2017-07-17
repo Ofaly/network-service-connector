@@ -4,12 +4,14 @@ import io.solwind.api.DiscoveryConfig;
 import io.solwind.api.ServiceRegistrar;
 import io.solwind.api.RmiConnectorServer;
 import io.solwind.api.TokenSecurityHandler;
+import io.solwind.exception.DedicatedRuntimeException;
 import io.solwind.handler.RegistrationServiceHolder;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +40,7 @@ class Exposer implements ServiceRegistrar {
         this.host = host;
         this.discoveryConfig = discoveryConfig;
         String[] hostSplit = this.host.split(":");
-        rmiConnectorServer.port(hostSplit.length > 1?new Integer(hostSplit[1]):80);
+        rmiConnectorServer.port(hostSplit.length > 1?new Integer(hostSplit[1]):freePort());
         rmiConnectorServer.serviceTable(serviceTable);
         rmiConnectorServer.handlerTable(handlerTable);
         new Thread(rmiConnectorServer).start();
@@ -52,7 +54,7 @@ class Exposer implements ServiceRegistrar {
         this.exposerName = discoveryConfig.props().getProperty("newServiceRegistrar.name");
         this.discoveryConfig = discoveryConfig;
         String[] hostSplit = this.host.split(":");
-        rmiConnectorServer.port(hostSplit.length > 1?new Integer(hostSplit[1]):80);
+        rmiConnectorServer.port(hostSplit.length > 1?new Integer(hostSplit[1]):freePort());
         rmiConnectorServer.serviceTable(serviceTable);
         rmiConnectorServer.handlerTable(handlerTable);
         new Thread(rmiConnectorServer).start();
@@ -78,4 +80,17 @@ class Exposer implements ServiceRegistrar {
     public void stop() throws InterruptedException {
         rmiConnectorServer.stop();
     }
+
+    private int freePort() {
+        try {
+            int port = 0;
+            ServerSocket serverSocket = new ServerSocket(0);
+            port = serverSocket.getLocalPort();
+            serverSocket.close();
+            return port;
+        } catch (IOException e) {
+            return 0;
+        }
+    }
+
 }

@@ -133,6 +133,11 @@ public class ZookeeperDiscoveryConnector implements DiscoveryConfig {
         return this.properties;
     }
 
+    @Override
+    public boolean check() {
+        return properties != null && properties.containsKey("zookeeper.connection.host");
+    }
+
     private class ZooKeeperClient {
 
         final CountDownLatch connectedSignal = new CountDownLatch(1);

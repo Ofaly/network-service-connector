@@ -4,6 +4,7 @@ import io.solwind.ITestService;
 import io.solwind.api.DiscoveryConfig;
 import io.solwind.api.RmiConnectorClient;
 import io.solwind.api.RmiConnectorServer;
+import io.solwind.exception.DedicatedRuntimeException;
 import io.solwind.handler.MethodInvocationHandler;
 import io.solwind.handler.RegistrationServiceHolder;
 import org.hamcrest.CoreMatchers;
@@ -39,6 +40,62 @@ public class NetworkTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
     }
+
+    @Test(expected = DedicatedRuntimeException.class)
+    public void wrongConfigTest1() throws IOException, InterruptedException {
+        Network.newServiceRegistrar(null, null, null, null);
+    }
+
+    @Test(expected = DedicatedRuntimeException.class)
+    public void wrongConfigTest2() throws IOException, InterruptedException {
+        Network.newServiceRegistrar(null, null, null, rmiConnectorServer);
+    }
+
+    @Test(expected = DedicatedRuntimeException.class)
+    public void wrongConfigTest3() throws IOException, InterruptedException {
+        Network.newServiceRegistrar(null, null, discoveryConfig, rmiConnectorServer);
+    }
+
+    @Test(expected = DedicatedRuntimeException.class)
+    public void wrongConfigTest4() throws IOException, InterruptedException {
+        Network.newServiceRegistrar(null, "somehost", discoveryConfig, rmiConnectorServer);
+    }
+
+    @Test(expected = DedicatedRuntimeException.class)
+    public void wrongConfigTest5() throws IOException, InterruptedException {
+        Network.newServiceRegistrar(null, "", discoveryConfig, rmiConnectorServer);
+    }
+
+    @Test(expected = DedicatedRuntimeException.class)
+    public void wrongConfigTest6() throws IOException, InterruptedException {
+        Network.newServiceRegistrar("somename", "somehost", discoveryConfig, rmiConnectorServer);
+    }
+
+    @Test(expected = DedicatedRuntimeException.class)
+    public void wrongConfigTest7() throws IOException, InterruptedException {
+        Network.newServiceRegistrar("", "somehost", discoveryConfig, rmiConnectorServer);
+    }
+
+    @Test(expected = DedicatedRuntimeException.class)
+    public void wrongConfigTest8() throws IOException, InterruptedException {
+        Mockito.when(discoveryConfig.props()).thenReturn(new Properties());
+        Network.newServiceRegistrar("", "somehost", discoveryConfig, rmiConnectorServer);
+    }
+
+    @Test(expected = DedicatedRuntimeException.class)
+    public void wrongConfigTest9() throws IOException, InterruptedException {
+        Mockito.when(discoveryConfig.props()).thenReturn(new Properties());
+        Network.newServiceRegistrar("test-name", "somehost", discoveryConfig, rmiConnectorServer);
+    }
+
+    @Test
+    public void wrongConfigTest10() throws IOException, InterruptedException {
+        Properties t = new Properties();
+        t.setProperty("zookeeper.connection.host", "localhost");
+        Mockito.when(discoveryConfig.check()).thenReturn(true);
+        Network.newServiceRegistrar("test-name", "somehost", discoveryConfig, rmiConnectorServer);
+    }
+
 
     @Test
     public void discovery() throws Exception {
@@ -86,22 +143,6 @@ public class NetworkTest {
 
         List<ITestService> services = Network.newServiceRegistrarClient(discoveryConfig).createForAll(ITestService.class, rmiConnectorClient);
         assertTrue(services.size() == 2);
-    }
-
-    @Test
-    public void exposer() throws Exception {
-        Properties properties = new Properties();
-        properties.setProperty("register.host", "host");
-        Mockito.when(discoveryConfig.props()).thenReturn(properties);
-        Network.newServiceRegistrar(discoveryConfig, rmiConnectorServer);
-    }
-
-    @Test
-    public void exposerWithHost() throws Exception {
-        Properties properties = new Properties();
-        properties.setProperty("register.host", "host");
-        Mockito.when(discoveryConfig.props()).thenReturn(properties);
-        Network.newServiceRegistrar("testExposer", "host:8080", discoveryConfig, rmiConnectorServer);
     }
 
 }
