@@ -9,7 +9,7 @@ This library allows to easy connect between different services which ran on diff
 <dependency>
     <groupId>io.solwind</groupId>
     <artifactId>network-service-connector</artifactId>
-    <version>0.0.8</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -22,8 +22,8 @@ This library allows to easy connect between different services which ran on diff
 <dependency>
     <groupId>io.solwind</groupId>
     <artifactId>network-service-connector</artifactId>
-    <version>0.0.9-SNAPSHOT</version>
-</dependency>>
+    <version>1.0.1-SNAPSHOT</version>
+</dependency>
 ```
 
 The application.properties file needs to be created in classpath. 
