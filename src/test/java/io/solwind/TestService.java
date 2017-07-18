@@ -11,6 +11,11 @@ import java.util.List;
 @Discoverable
 public class TestService implements ITestService {
 
+    private String testVoidMethod = new String();
+
+    public TestService() {
+    }
+
     public String echoText() {
         return "ok";
     }
@@ -49,4 +54,21 @@ public class TestService implements ITestService {
     public String noSerializeDtoArgument(NoSerializableCustomDto noSerializableCustomDto) {
         return "empty";
     }
+
+    @Override
+    public void testVoidMethod() {
+        testVoidMethod = "passed!!!";
+    }
+
+    @Override
+    public void testVoidMethod(String name) {
+        testVoidMethod = "passed " + name + "!!!";
+    }
+
+    @Override
+    public String getTestVoidField() {
+        return testVoidMethod;
+    }
+
+
 }

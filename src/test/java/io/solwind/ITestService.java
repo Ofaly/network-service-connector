@@ -14,4 +14,7 @@ public interface ITestService {
     String stringWithTimeout() throws InterruptedException;
     String listParams(String str, Integer i, List list);
     String noSerializeDtoArgument(NoSerializableCustomDto noSerializableCustomDto);
+    void testVoidMethod();
+    void testVoidMethod(String name);
+    String getTestVoidField();
 }

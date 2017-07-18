@@ -16,10 +16,10 @@ public class CallResponse implements Serializable {
 
     private void writeObject(java.io.ObjectOutputStream out)
             throws IOException {
-        if (response instanceof Serializable) {
+        if (response == null || response instanceof Serializable) {
             out.writeObject(response);
         } else {
-            NotSerializableException notSerializableException = new NotSerializableException(String.format("%s", response.getClass()));
+            NotSerializableException notSerializableException = new NotSerializableException(String.format("%s", response));
             LOGGER.info("{}", notSerializableException);
             throw notSerializableException;
         }

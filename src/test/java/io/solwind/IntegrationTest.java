@@ -108,6 +108,12 @@ public class IntegrationTest {
         String s = testService.listParams("test1", new Integer(1), null);
         Assert.assertEquals("test1 1 null", s);
 
+        testService.testVoidMethod();
+        Assert.assertEquals("passed!!!", testService.getTestVoidField());
+
+        testService.testVoidMethod("name");
+        Assert.assertEquals("passed name!!!", testService.getTestVoidField());
+
     }
 
     @Test
