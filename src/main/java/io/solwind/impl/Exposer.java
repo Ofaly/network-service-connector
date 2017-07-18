@@ -1,10 +1,9 @@
 package io.solwind.impl;
 
 import io.solwind.api.DiscoveryConfig;
-import io.solwind.api.ServiceRegistrar;
 import io.solwind.api.RmiConnectorServer;
+import io.solwind.api.ServiceRegistrar;
 import io.solwind.api.TokenSecurityHandler;
-import io.solwind.exception.DedicatedRuntimeException;
 import io.solwind.handler.RegistrationServiceHolder;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
@@ -40,7 +39,7 @@ class Exposer implements ServiceRegistrar {
         this.host = host;
         this.discoveryConfig = discoveryConfig;
         String[] hostSplit = this.host.split(":");
-        rmiConnectorServer.port(hostSplit.length > 1?new Integer(hostSplit[1]):freePort());
+        rmiConnectorServer.port(hostSplit.length > 1 ? new Integer(hostSplit[1]) : freePort());
         rmiConnectorServer.serviceTable(serviceTable);
         rmiConnectorServer.handlerTable(handlerTable);
         new Thread(rmiConnectorServer).start();
@@ -54,7 +53,7 @@ class Exposer implements ServiceRegistrar {
         this.exposerName = discoveryConfig.props().getProperty("newServiceRegistrar.name");
         this.discoveryConfig = discoveryConfig;
         String[] hostSplit = this.host.split(":");
-        rmiConnectorServer.port(hostSplit.length > 1?new Integer(hostSplit[1]):freePort());
+        rmiConnectorServer.port(hostSplit.length > 1 ? new Integer(hostSplit[1]) : freePort());
         rmiConnectorServer.serviceTable(serviceTable);
         rmiConnectorServer.handlerTable(handlerTable);
         new Thread(rmiConnectorServer).start();
