@@ -11,6 +11,15 @@ import java.util.List;
 @Discoverable
 public class TestService1 implements ITestService {
 
+    private String testVoidMethod;
+
+    public TestService1(String testVoidMethod) {
+        this.testVoidMethod = testVoidMethod;
+    }
+
+    public TestService1() {
+    }
+
     public String echoText() {
         return "ok1";
     }
@@ -53,5 +62,19 @@ public class TestService1 implements ITestService {
         return "empty";
     }
 
+    @Override
+    public void testVoidMethod() {
+        testVoidMethod = "passed!!!";
+    }
+
+    @Override
+    public void testVoidMethod(String name) {
+        testVoidMethod = "passed " + name + "!!!";
+    }
+
+    @Override
+    public String getTestVoidField() {
+        return testVoidMethod;
+    }
 
 }
